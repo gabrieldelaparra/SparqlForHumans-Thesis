@@ -1,0 +1,159 @@
+\chapter{Background}
+
+This work covers two major topics in Computer Science: Semantic Web and user interfaces. The Semantic Web aims to add semantics to the content of the Web, while user interfaces is focused on how users can interact with computers.
+
+\section{Semantic Web}
+
+The World Wide Web is the broadest, widest, deepest source of information we have ever created. 
+Nevertheless, most of this information is currently only useful when it is available from a single data source since there is no efficient~\footnote{APIs are a way to interface different data sources, still they require to be hand crafted and this is a costly and tedious process.} way to interface or to combine multiple data sources and types of information. \cite{W3CDesignIssues}
+
+A proposal to overcome this is through a graph based metadata structure model called RDF~\footnote{RDF, Resource Description Framework. \url{https://www.w3.org/TR/rdf-concepts/}}.
+RDF is a World Wide Web Consortium~\footnote{W3C, World Wide Web Consortium. \url{https://www.w3.org/}} Data Model specification that describes a common way to organize data, providing a common platform for web sites to talk to each other~\footnote{It can be applied for every purpose, but it is for Web of Data where it shines.}. 
+This approach of solving the exchange of information across the Internet is commonly known as the Semantic Web.
+
+Every day, more institutions and companies are storing their data in graph based data stores. Several of the Semantic Web state of the art research is 
+
+Topics to talk about:\\
+- Insitutions and companies are using more these datasets\\
+- Multiple collaboration and linking of datasources\\
+- Data is added everyday, coming from industrial sectors as Process sensors, IoT, RFID, where data is added every second.\\
+- Several sources for music, movies, medicine, geospatial, etc. DBPedia and Wikidata. In chile BCN.
+
+\textbf{Note: Jose here got into the details for the semantic web, such as layers were RDF is the datalayer and sparql the query language. Maybe we should add some of that stuff also. This will all depend on how deep should I go into describing these. I think that I should not go too deep. Everyone talks about this. Desto, yo debo hablar de eso}
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item World Wide Web Consortium \cite{w3c}
+    \item Sitio Datos abiertos enlazados de la Biblioteca del Congreso Nacional de Chile \cite{datosbcn}
+    \item W3C Architectural and philosophical Design Issues \cite{W3CDesignIssues}
+    \item DBpedia - A Large-scale, Multilingual Knowledge Base Extracted from Wikipedia\cite{Lehmann2014}
+    \item Wikidata: A Free Collaborative Knowledge Base \cite{Wikidata2014}
+    \item An Introduction to Question Answering over Linked Data\cite{Unger2014}
+\end{itemize}
+
+\subsection{Data Model RDF}
+
+Even though RDF proposes how the data is stored, there are still open issues on the usability of this data. There has been interesting research in various directions related to visualization, exploration, querying and presenting data.
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item RDF, Resource Description Framework Concepts \cite{rdfConcepts}
+\end{itemize}
+
+\subsection{SPARQL}
+\label{chap:SPARQL}
+
+In regards of querying, SPARQL~\footnote{SPARQL 1.1 query language. \url{http://www.w3.org/TR/sparql11-query/}} is the W3C recommended language for querying RDF data structures. Even thou there are alternatives, such as vSPARQL, IML; SPARQL is the \textit{de facto} language for RDF Graph queries and the alternatives do not improve the situation for non-technical users, but add additional functionalities for querying. 
+
+SPARQL is based on graph pattern matching\footnote{More on SPARQL: \url{http://www.cambridgesemantics.com/semantic-university/learn-sparql}}. 
+According to existing literature \cite{Unger2014,Lehmann2014,Unger2015,Rietveld2016,Arenas2016,Ferre2016}, there seems to be two main points regarding SPARQL usage difficulties by non-technical users: 
+SPARQL language syntax and user interfaces.
+
+
+Talk about:\\
+- Question Answering Systems\\
+- Natural Language Composition\\
+- Query by example\\
+- Visual Query Systems
+
+In regards of avoiding the SPARQL query language, according to Unger~\cite{Unger2014}, "\textit{While the amount of knowledge available as linked data grows, so does the need for providing end users with access to this knowledge. Especially question answering systems are receiving much interest, as they provide intuitive access to data via natural language (NL) and shield end users from technical aspects related to data modelling, vocabularies and query languages}". The natural language approach offers a human-intuitive way to query data but is inherently difficult. As a result, some questions will be incorrectly answered; in other cases, the question may not even be processed~\cite{Unger2015}. 
+
+An alternative solution to the usability problem, is to provide graphical user interfaces (GUI) where queries can be generated through visual interactions. 
+User interaction with SPARQL has been approached by several authors before. 
+In their work, Rietveld et al.~\cite{Rietveld2016} compare several SPARQL query clients’ features, still all of them require SPARQL syntax knowledge from the users. 
+A different approach has been proposed by Arenas et al.~\cite{Arenas2016}. 
+The authors try to engage the querying through faceted search. 
+The main issue is that this type of search does not support joins across different entities and the queries cannot be reused or adapted afterwards, but basically, this search approach handles trees only, leaving cyclic queries out of their scope. 
+
+Another approach, where the answers are used to build the query, has been proposed by Diaz et al.~\cite{Diaz2016}. 
+This approach relies on the user having some knowledge of the expected results, which often does not hold true. 
+A fourth approach, called SPARKLIS has been proposed by Ferré~\cite{Ferre2016}. 
+SPARKLIS provides users with a web tool to build queries guided by a controlled natural language and faceted search. 
+Like Arenas' research~\cite{Arenas2016}, it builds on the base of faceted search, which does not support arbitrary conjunctive~\footnote{Conjunctive queries are AND-queries, other types of queries include disjunctive, optional, path, multiple jumps or negation queries.} graph pattern queries. 
+
+A novel proposal by Vargas et al.~\cite{Vargas2019} allows users to create queries through "\textit{an interactive graph-based exploration that allows non-expert users to simultaneously navigate and query knowledge graphs}"\footnote{The interface is available at \url{http://www.rdfexplorer.org}}. According to the researcher, the results allow users with non-technical background to create queries as opposed to. 
+According to the author, the idea was similar to Clemmel's work~\cite{Clemmer2011}, but allowing users to use graph patterns instead of trees.
+
+\textbf{Aqui me gustaria hablar sobre las limitaciones de la interfaz. Algunos de los problemas de exploracion encontrados. Poder mostrar un ejemplo seria muy interesante.}
+
+Regarding visualization and exploration of datasets, some interesting conclusions have been done by Bikakis and Sellis~\cite{Bikakis2016}: "\textit{In the Big Data era. Exploring and visualizing very large datasets has become a major research challenge, of which scalability is a vital requirement. In this survey, we describe the major prerequisites and challenges that should be addressed by the modern exploration and visualization}". From their survey, we agree on the following points:
+\begin{itemize}
+    \item It is not possible to visualize Big Data sources with traditional tools, in Schneiderman's words, we are continuously trying to "\textit{squeeze a billion records into a million pixel}"~\cite{Shneiderman2008}.
+    \item Several approaches exist: Tradeoffs should exist performance/correctness/completeness or static/dynamic data via caching/indexing, aggregation/sampling.
+\end{itemize}
+
+\textbf{AUTHORS have found that direct visualization of data is no use as in with traditional data and that some trade-offs are required for scalability. AUTHORS have proposed, surveyed and evaluated diverse visualization techniques for exploring and displaying data. There has been some interesting findings}
+
+\textbf{While this is true for exploration and visualization, we will take some of these }
+
+It is worth mentioning that there is existing literature \cite{Lehmann2012, Ngomo2013, Cimiano2013, Lehmann2013, Androutsopoulos2014, Colin2016, Ngomo2019} on the conversion from SPARQL query results, OWL and RDF to NL, still this does not help users to create queries, but understand the results.
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item SPARQL 1.1 Query Language \cite{Sparql2012}
+    \item Sorry, I Don’t Speak SPARQL: Translating SPARQL Queries into Natural Language \cite{Lehmann2013}
+    \item SPARQL2NL - Verbalizing SPARQL queries \cite{Ngomo2013}
+    \item Sorry, I only speak natural language: a pattern-based, data-driven and guided approach to mapping natural language queries to SPARQL \cite{Rico2015}
+    \item Querying Wikidata: Comparing SPARQL, Relational and Graph Databases \cite{Hernandez2016}
+    \item The YASGUI family of SPARQL clients \cite{Rietveld2016}
+    \item Designing scientific SPARQL queries using autocompletion by snippets \cite{Rafes2018}
+\end{itemize}
+
+\subsection{Linked Data}
+\textbf{Creo que no tengo que hablar de Linked Data}
+\textbf{Related Articles:}
+\begin{itemize}
+    \item Sitio Datos abiertos enlazados de la Biblioteca del Congreso Nacional de Chile\cite{datosbcn}
+\end{itemize}
+
+\subsection{Wikidata}
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item MOSTRAR UNA ENTIDAD, CUALES SON SUS RELACIONES.
+    \item Wikidata: A Free Collaborative Knowledge Base \cite{Wikidata2014}
+    \item Wikidata Query Service \cite{wikidataQueryService}
+\end{itemize}
+
+\section{Information Retrieval}
+
+\subsection{Index}
+\label{chap:lucene}
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item A faceted browsing interface for diverse Large-Scale RDF Datasets\cite{Moreno2018}
+\end{itemize}
+
+\subsection{Ranking}
+\label{chap:pagerank}
+
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item The PageRank Citation Ranking: Bringing Order to the Web\cite{Page1998}
+\end{itemize}
+
+\section{User Interfaces}
+
+\textbf{Related Articles:}
+\begin{itemize}
+    \item Extreme Visualization: Squeezing a Billion Records into a Million Pixels \cite{Shneiderman2008}
+    \item Smeagol: A “Specific-to-General” Semantic Web Query Interface Paradigm for Novices \cite{Clemmer2011}
+    \item Approaches to visualising Linked Data: A survey \cite{Dadzie2011}
+    \item Exploration and Visualization in the Web of Big Linked Data: A Survey of the State of the Art \cite{Bikakis2016}
+    \item Faceted Search Over RDF-Based Knowledge Graphs \cite{Arenas2016}
+    \item SPARQLByE: Querying RDF Data by Example \cite{Diaz2016}
+    \item Sparklis: An expressive query builder for SPARQL endpoints with guidance in natural language \cite{Ferre2016}
+    \item A faceted browsing interface for diverse Large-Scale RDF Datasets \cite{Moreno2018}
+    \item A Holistic Natural Language Generation Framework for the Semantic Web \cite{Ngomo2019}
+    \item RDF Explorer: A Visual SPARQL Query Builder \cite{Vargas2019}
+\end{itemize}
+
+\subsection{Visual Query Systems}
+
+\subsection{Autocompletition}
+\textbf{Related Articles:}
+\begin{itemize}
+    \item Designing scientific SPARQL queries using autocompletion by snippets\cite{Rafes2018}
+\end{itemize}

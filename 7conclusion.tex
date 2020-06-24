@@ -1,0 +1,49 @@
+\chapter{Conclusion}
+
+what were my goals, challenges, questions;
+all in a paragraph or 3.
+
+Summary:
+Methods for graph exploration, indexing, generating approximated 
+
+Would it be possible to generate good sugestions in reasonable time.
+
+Before the main results: what tesis is about and the main questions are.
+(Ask questions)
+
+\section{Main Results}
+
+Do not repeat the questions, but the high level: did it work, what does it means that it worked: can I generate suggestions in reasonable time for users building.
+
+make a claim. It does generate suggestions in reasonable
+results with xxxx approx, in yyy time but with zzz\% precision.
+
+examples of good results, and of bad results: Justify where it works and where it doesnt.
+
+present cases where the remote endpoint works fast and where it timeouts, how complements the endpoint to pro
+slow but precise vs fast and imprecise.
+
+\section{Limitations and future work}
+\label{chap:futureWork}
+
+data types
+complex sparql queries, filter/option, multiple types in same node;
+update? build local index time;
+precision degradation over old index;
+
+how to improve precision without doing a larger index; it would be possible to improve 
+
+% \section{Future Work}
+% \subsection{Data Types}
+% \subsection{Text Editors}
+Integration with text editors.
+
+
+
+In our experience while testing our system, we have acknowledged that some user queries can be sent to the remote SPARQL endpoint and the response can come in a fraction of a second, while others can take minutes or timeout. 
+We have run several tests with different values and the response time can vary significantly for the same query at different times. While this is actually hard to measure, probably due to Wikidata caching the user queries, creating parallel threads for both local and remote queries helps get timed results.
+
+
+During our tests we have realized that using services such as the \textit{Wikidata Label Service}, or querying for labels, can dramatically increase the query response time and timeout for several queries. In order to overcome this and provide the users with useful information about the queried entities, the label and description for all the endpoint results are retrieved from the local index.
+
+Additionally each disconnected sub-graph query will be sent independently. This also allows some values to return when some part (or sub-graph) of the query takes too long or fails and also avoids a Cartesian product when running disconnected sub-graphs in the same query.

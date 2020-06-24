@@ -1,0 +1,16 @@
+\begin{intro}
+
+In this work we present a novel interface to suggest properties for exploration and query tasks over large-scale RDF datasets. 
+Our method can be applied to help users express queries over an existing triplestore. 
+It works by creating an index of the dataset's entities and properties, based on the outgoing and incoming subject and object types.
+We have considered class hierarchy properties (e.g. InstanceOf, TypeOf) combined with their functional domain and ranges (based on these hierarchies). 
+PageRank is used for ranking the suggestions. 
+The goal of our research is to efficiently suggest only relevant predicates at each step that will not lead to empty answer, rather than all possible predicates as are currently displayed by existing autocompletion techniques. 
+In order to achieve this, given that finding precisely the correct set of predicates is often too expensive for certain graph constructs, a tradeoff with correctness is done. 
+In this tradeoff, additional irrelevant predicates that may lead to incorrect results may sometimes be proposed, but all relevant predicates will be proposed.
+Our research empowers both technical and non-technical users to select the right predicate, either for querying or exploration tasks, including cases where the dataset is not known to the user.
+We have tested our method by indexing a Wikidata Dump, proving its scalability. 
+We have implemented our methods into a user interface called RDF Explorer: a Visual Query and Exploration System for SPARQL that allows non-technical users to visually create queries. 
+Our method can also be applied to other existing SPARQL interfaces such as the Wikidata Query Tool.
+
+\end{intro}

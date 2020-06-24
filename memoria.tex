@@ -1,0 +1,78 @@
+\documentclass[upright, contnum]{umemoria}
+
+%fix for the oneside argument
+\makeatletter
+\g@addto@macro\titlepage{\pagenumbering{Alph}}
+\g@addto@macro\endtitlepage{\pagenumbering{roman}}
+\makeatother
+
+\depto{Departamento de Ciencias de la Computación}
+\author{Gabriel Ignacio De la Parra Urrejola}
+\title{Autocompletion for SPARQL Exploration and Querying}
+\auspicio{}
+\date{2020}
+\guia{Aidan Hogan}
+\carrera{Magíster en Ciencias, Mención Computación}
+\memoria{Tesis para optar al Grado de \break  Magíster en Ciencias, Mención Computación}
+\comision{}
+
+\usepackage{lipsum}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% \usepackage{tabularx} 
+\usepackage{float}
+\usepackage{minted}
+\usepackage{hyperref}
+\usepackage{soul}
+\usepackage{caption}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\newtheorem{example}{Example}[chapter]
+\renewcommand{\chapterautorefname}{Chapter}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+
+\begin{abstract}
+Traduccion del abstract al castellano.
+\end{abstract}
+
+\begin{dedicatoria} % opcional
+This work is dedicated to my family, wife and friends.\\
+Thanks for always being there.
+\end{dedicatoria}
+
+% \begin{thanks} % opcional
+% Quiero agradecer este trabajo...
+% \end{thanks}
+
+\cleardoublepage
+
+\tableofcontents
+\listoftables % opcional
+\listoffigures % opcional
+
+\mainmatter
+
+\input{0abstract}
+\input{1intro}
+\input{2background}
+\input{3system}
+\input{4backend}
+\input{5frontend}
+\input{6evaluation}
+\input{7conclusion}
+
+% \input{glosario.tex} % opcional
+
+\bibliographystyle{plain}
+\bibliography{bibliografia}
+
+% \input{anexo_apendices.tex} % opcionales
+
+\end{document}
