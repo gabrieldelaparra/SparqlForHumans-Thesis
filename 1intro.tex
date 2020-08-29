@@ -1,43 +1,45 @@
 \chapter{Introduction}
 
 \section{Motivation}
+\label{chap:motivation}
 
 The World Wide Web is the broadest, widest, deepest source of information we have ever created. 
 Nevertheless, most of this information is difficult to access unless it is available from a single data source since there is no efficient\footnote{APIs are a way to interface different data sources, 
-still they require to be hand crafted and this is a costly and tedious process.} way to interface or to combine multiple data sources and types of information~\cite{W3CDesignIssues}.
+still they need to be hand crafted and this is a costly and tedious process.} way to interface or to combine multiple data sources and types of information~\cite{W3CDesignIssues}.
 
-A proposal to overcome this is through a graph structured model called the Resource Description Framework, or simply RDF~\cite{rdfprimer11}. 
+A proposal to overcome this limitation is through a graph structured model called the Resource Description Framework, or simply RDF~\cite{rdfprimer11}. 
 RDF is a World Wide Web Consortium (W3C) Data Model specification that describes an agreed-upon way to organize data, 
-providing a common platform for web sites to talk to each other. 
+providing a common platform for web sites to communicate with each other. 
 This approach for modelling and exchanging information across the Internet is commonly known as the Semantic Web.
 
-Even though RDF proposes how the data is stored, there are still open issues on accessing this data, particularly in terms of usability. 
+Even though RDF proposes how the data is modelled, there are still open issues on accessing this data, particularly in terms of usability. 
 To address such issues, there has been interesting research related to visualization, exploration, querying and presenting data.
 
-In regards to querying, SPARQL~\cite{sparql11}\footnote{A recursive acronym that stands for SPARQL Protocol and RDF Query Language.} is the W3C recommended language for querying RDF data structures and is based on graph pattern matching. According to existing literature e.g.:~\cite{Ferre2016,Lehmann2014,Unger2014}, there seems to be two main issues regarding SPARQL usage difficulties by non-technical users: learning SPARQL language syntax or the lack of helpful user interfaces.
+In regards to querying, SPARQL~\cite{SPARQL}\footnote{A recursive acronym that stands for SPARQL Protocol and RDF Query Language.} is the W3C recommended language for querying RDF data structures and is based on graph pattern matching. According to existing literature e.g.:~\cite{Ferre2016, Lehmann2014, Unger2014}, there seems to be two main issues regarding SPARQL usage difficulties by non-technical users: learning SPARQL language syntax and the lack of helpful user interfaces.
 
 There have been several approaches proposed to broaden the use of SPARQL among non-experts: 
-natural language approaches~\cite{Ngomo2013,Rico2015}, faceted search~\cite{Arenas2016,Moreno2018}, 
-query by example~\cite{Clemmer2011,Diaz2016}, 
-visual query builders~\cite{Dadzie2011,Vargas2019}, visual RDF explorers~\cite{Bikakis2016,Rietveld2016}, etc. 
+natural language approaches~\cite{Ngomo2013, Lehmann2013, Rico2015, Ngomo2019}, faceted search~\cite{Arenas2016, Moreno2018}, 
+query by example~\cite{Clemmer2011, Diaz2016}, 
+visual query builders~\cite{Dadzie2011, Vargas2019}, visual RDF explorers~\cite{Bikakis2016, Rietveld2016}, etc. 
 All of these techniques have their own pros and cons. 
-Some of them abstract the users completely from the syntax while limiting the types of queries that can be built. 
-Others focus only on single entities. Others still can only process tree queries, leaving cyclic queries out of scope, etc. 
+Some of them abstract the syntax of the query language completely for users while limiting the types of queries that can be built. 
+Others focus only on single entities and their facets. 
+Others still can only process tree queries, leaving cyclic queries out of scope, etc. 
 
-Based on their research and applications, we have identified that although query building can be approached in different ways, 
-a tradeoff between usability and expressiveness exist where simpler systems e.g.: 
+Based on the available research and applications, we have identified that although query building can be approached in different ways, 
+a trade-off between usability and expressiveness exist where simpler systems e.g.: 
 faceted search, are easy to use but fail to express complex queries. 
 In those complex scenarios SPARQL syntax or a similar query representation is required. 
-However we have identified that SPARQL systems lack some mechanics that are supported by systems of programming languages, 
-and that implementing these mechanics in SPARQL is not straightforward and requires research for a specialised approach.
+However we have identified that SPARQL systems lack some mechanics that are supported by (for example) systems of programming languages, 
+in particular autocompletion, and that implementing these mechanics in SPARQL is not straightforward and requires research for a specialised approach.
 
 In this work we provide some techniques for allowing users to easily and efficiently approach the SPARQL query building process. 
 Our aim is to help users create queries in an assisted way. 
 Our proposal is inspired by helpful mechanics that other programming language systems have to help users approach the syntax/language. 
-We will try to describe the problem we are trying to solve by example. 
+We will try to describe the problem we are trying to solve by an example familiar from software development tools.
 
 We will start with the following piece of code:
-\begin{minted}[linenos,tabsize=2,frame=single]{csharp}
+\begin{minted}[]{csharp}
 class Person {
   int Age;
   string Name;
@@ -49,97 +51,76 @@ john = new Person();
 john.//(trigger)
 \end{minted}
 
-We will make a bold move and take as granted that most of the readers have worked before with a software development IDE. 
+We will assume that most of the readers have worked before with a software development IDE. 
 If this is the reader’s case, it would then be familiar that, on line 9, after typing the ‘.’ (autocomplete trigger) after \textit{john}, 
 the IDE would propose suggestions like \textit{Age} and \textit{Name}. 
-This incredibly helpful feature, also known as \textit{autocompletion}\footnote{According to Wikipedia, the term was originally popularized as "picklist" and some implementations still refer to it as such. 
+This helpful feature, known as \textit{autocompletion}\footnote{According to Wikipedia, the term was originally popularized as "pick-list" and some implementations still refer to it as such. 
 From \url{https://en.wikipedia.org/wiki/Intelligent_code_completion}}, allows users to easily select the properties or methods they want. 
 
 Now, in SPARQL query editors, this feature is currently not available. 
 If you were to write the following triples in the Wikidata SPARQL Endpoint:
 
-\begin{minted}[linenos,tabsize=2,frame=single]{SPARQL}
-#?variable <instanceOf> <Human> 
+\begin{minted}[]{SPARQL}
+#In SPARQL, comments start with the '#' character
+#The next line expresses that '?variable' is an instance Of 'Human' 
 ?var wdt:P31 wd:Q5 .
 ?var #(trigger)
 \end{minted}
 
-In the second triple, on line 3, as suggestions for \textit{?var}, with the existing state of the art, a user could be suggested properties such as \textit{publishedBy} or \textit{sharesBordersWith}. 
+In the second triple, on line 4, as suggestions for \textit{?var}, with the existing systems in place, a user could be suggested properties such as \textit{publishedBy} or \textit{sharesBordersWith}. 
 The user might agree that these suggestions make no sense for a variable declared to be of type \textit{Human}. 
 
 This can also be extended to the following triples:
 
-\begin{minted}[linenos,tabsize=2,frame=single]{SPARQL}
+\begin{minted}[]{SPARQL}
 #?variable <placeOfBirth> ...
 ?var wdt:P19 #(trigger)
 \end{minted}
 
-This time, we would use our autocomplete for suggesting objects. 
+This time, we would use our autocomplete for suggesting object terms, which are the value for a property. 
 It would make no sense to suggest other \textit{Humans} or \textit{Movies} after the \textit{P19} (placeOfBirth) predicate, but rather we would expect suggestions that are \textit{Places} (\textit{Cities} or similar). 
-The same principle could also be used for suggesting subjects on more complex declarations.
+The same principle could also be used for suggesting terms in more complex declarations.
 
-In programming environments, behind the code editor in an IDE, a local tags index\footnote{The most common implementation is ctags: \url{http://ctags.sourceforge.net/}} of the source code is built as the code is modified. 
-This index suggests the available methods and properties for all types, so that you can have a magic journey accessing and using them.
+In programming environments, behind the code editor in an IDE, a local tags index of the source code is built as the code is modified\footnote{The most common implementation is \textit{ctags}: \url{http://ctags.sourceforge.net/}}. 
+This index suggests the available methods and properties for all types, so that you can have a pleasant journey accessing and using them.
 
 Without a specialised index, these suggestions would not be immediate, since the IDE would have to traverse the whole code each time to prepare the suggestions. 
 This is something that on large RDF datasets can take minutes. 
 On endpoints as the Wikidata Endpoint, this would result in a timeout in case of more complex queries (> 60 seconds). 
-On a local endpoint, without the timeout restriction, these exploration queries could take tens of minutes, or more. 
+On a local endpoint, without the timeout restriction, these exploration queries could take tens of minutes, or more.  This is because finding all and only relevant suggestions for terms to fill a graph query is NP-hard, being directly related to the graph homomorphism problem~\cite{PerezAG09}.
 
 The goal of our work is to allow users, while exploring datasets, to be suggested with realistic proposals in real time. 
 This partially removes the need to previously know the structure of the dataset, and guides the users in their query building process.
 
 In this work, we propose a specialised index based on types, domain and ranges. 
 As an example, in RDF we can represent a triple such as \textit{"Jon was born in Ireland"}. 
-In this triple, \textit{Jon} is of type \textit{Human} and \textit{Ireland} is of type \textit{Country}. 
-Our index will identify that \textit{placeOfBirth}, has domain \textit{Human} (or others, such as \textit{Dog}) and range \textit{Country} (or others, such as \textit{City}). 
+In this triple, \textit{Jon} is a subject of type \textit{Human} and \textit{Ireland} is an object of type \textit{Country}. 
+Our index will identify that the property \textit{placeOfBirth}, has domain \textit{Human} (or others, such as \textit{Dog}) and range \textit{Country} (or others, such as \textit{City}). 
 
-We have tested this proposal for large-scale RDF datasets, such as the Wikidata RDF dataset with positive results, where the available properties are displayed in a fraction of a second. 
+We have tested this proposal for large-scale RDF datasets, such as the Wikidata RDF dataset with positive results, where the available terms are displayed in under three seconds. 
 Nevertheless, we have found that in our implementation a trade-off is required between correctness and performance when dealing with elaborate graph constructions.
 
-This tradeoff is originated by the nature of our index. 
-We build our index using the subject types and the object types, not the instances. 
-Because of this, we display all available properties between two entities types, while in reality, the available triples could have some restrictions due to other edges that would have prevented some of the results to be shown.
+This trade-off is implemented as part of our index. 
+We build our index using the subject types and the object types  (e.g., \textit{Human}, \textit{Country}), not the instances (e.g., \textit{Jon}, \textit{Ireland}). 
+Because of this, we display all available properties between two entities types, while in reality, the available triples could have some restrictions due to other edges that would have prevented some of the results from being shown.
 
-To overcome this tradeoff, our query evaluation runs two parallel threads. 
-One on the query endpoint\footnote{Wikidata Query Endpoint Service in our case}, looking for the SPARQL engine to return the instance-based results and one on our local index. 
+To overcome this trade-off, our query evaluation runs two parallel threads. 
+One runs on the query endpoint\footnote{Wikidata Query Endpoint Service in our case}, requesting the SPARQL engine to return the instance-based results. The other one runs on our local index. 
 For our index, we have allowed a configurable waiting time for the SPARQL engine. 
-This would allow the engine to return the correct results when an exact calculation is possible and approximate results when not possible. 
-It is to be mentioned that in some cases, the query endpoint can return results without timing out.
+This would allow the engine to return the correct results from the query endpoint when an exact calculation is possible and approximate results from our index when not possible. 
 
 To test our work, we have applied our index to RDFExplorer~\cite{Vargas2019}, a SPARQL Visual Query System for exploration and query building. 
-We have chosen this work due to the simplicity that it offers to users for interactively building SPARQL queries without any knowledge of the language syntax. 
+We have chosen this work due to the simplicity that it offers users for interactively building SPARQL queries without any knowledge of the language syntax. 
 It also provides some helpful tools for navigating entities and displaying the results while building the query. 
 Currently this system allows users to search for entities through keyword search but also by selecting suggesting terms. 
 The system gets the suggestions by querying the endpoint directly. 
-While for some cases this will return the proper results, other cases, such as searching for all of the possible properties for an instance of human, could result in a timeout, in which case the system fails to provide any suggestions.
-
-Other works have approached the idea of adding autocomplete support to SPARQL queries. 
-Rafes et al.~\cite{Rafes2018} have conducted a two year study on SPARQL queries expressed by a community of scientific users. 
-In this work they have studied different text query editors\footnote{Flint Editor, iSPARQL, LODatio+, BioCarian, Gosparqled, Wikidata Query and YASGUI. All cited by Rafes et al.~\cite{Rafes2018}} with autocomplete features and classified them in four main techniques: 
-\textit{Autocompletion using relative IRIs via keywords}; 
-\textit{Autocompletion by prefix declaration}; 
-\textit{Autocompletion by template}; and 
-\textit{Autocompletion by suggestion of snippets}. 
-They have also identified that users usually fail to declare SPARQL queries due \textit{"to imperfect knowledge on the ontologies involved in the queries or the need to follow the syntax rather complex to master"}. 
-Their work is based on \textit{"suggesting fragments of queries mades by other previous users to complete the partial query already written by the user"}. 
-It works by \textit{"extracting representations of subpatterns from previous queries (under the form of "linegraphs") and construct a hierarchical clustering of such subpatterns to generate snippets that are most compatible with the portion of the query considered by the user"}. Our methods are similar in that we provide suggestions to users, but based on the data that exists in the dataset itself.
-
-Another approach to autocompletion has been proposed by El-Roby et al.~\cite{El-Roby2016}. 
-In their work Sapphire, they propose \textit{"a tool that helps users write syntactically and semantically correct SPARQL queries without prior knowledge of the queried datasets."}. 
-In their study, they have identified that Natural Language approaches for querying are good for simple queries, but not for complex queries. 
-For complex queries, \textit{"the user needs to know the structure of the dataset, the vocabulary used to represent different concepts, and the literals used in the dataset including their data types and format"}.
-Their system \textit{"provides data-driven suggestions to complete the predicates and literals in the query"}. 
-As in our work, their architecture is based on a server that sits between the user and the SPARQL endpoint.
-The indexing mechanics between Sapphire and our work differ mainly on two points: 
-They build their index with a sample of the data, built by running multiple queries (17 hours of queries for DBpedia), on the remote endpoint for hierarchical relations and predicates; 
-The second difference is that their proposals are based on properties that direct to literals and not entity to entity relations.
+While for some cases this will return the proper results, other cases, such as searching incoming properties for an instance of \textit{Human}, could result in a timeout, in which case the system fails to provide any suggestions.
 
 In this work we address some of the open issues that we have identified: 
 Most users have incomplete knowledge of the entities and properties they are trying to query for.
 Moreover, users should be able to write queries with just intuitive knowledge about the queried dataset. 
-We have also identified that available tools either do not provide autocompletion based on available valid terms~\cite{wikidataQueryService}, or aim to return precise suggestions for which timeouts are inevitable]~\cite{Vargas2019}. 
-While efficient autocompletion is available on most systems for programming languages, it is not on SPARQL systems. 
+We have also identified that available tools either do not provide autocompletion based on available valid terms~\cite{wikidataQueryService}, or aim to return precise suggestions for which timeouts are inevitable~\cite{Vargas2019}. 
+While efficient autocompletion is available in most systems for programming languages, it is not available in SPARQL systems. 
 Based on our research, tools with autocompletion have the potential to enrich the SPARQL exploration and query building user experience. 
 Some research works have developed autocompletion techniques that focus on previous query logs~\cite{Rafes2018} or sampling via endpoint requests~\cite{El-Roby2016}. 
 While these tools have provided good results, they are focused either on query snippets for helping with syntax, or in literals and literal-related properties, which excludes entities completely and the properties that relate to them. 
@@ -148,20 +129,19 @@ While these tools have provided good results, they are focused either on query s
 
 \subsection{Main Objective}
 The main goal of this work is to provide a class-based autocompletion index for SPARQL querying and exploration. 
-This index will suggest users the most relevant entities and properties, based primary on the observed domain classes and range classes of properties.
-This index would enable users, without knowledge of the RDF dataset structure and SPARQL query syntax, to explore and query such datasets.
+This index will suggest to users the most relevant entities and properties, based primarily on the observed domain classes and range classes of properties.
+This index would enable users without knowledge of the RDF dataset structure and SPARQL query syntax to explore and query such datasets.
 
 \subsection{Specific Objectives}
 
 The specific objective of this work is to build a specialised index from an RDF dataset dump that enables more efficient, approximate, autocompletion primitives. This involves the following sub-objectives:
 
 \begin{itemize}
-    \item Implement methods to identify and define class-hierarchy relationships in the data.
     \item Index the data, making it possible to build hierarchical relations between entities, their types and properties.
     \item Implement ranking mechanisms to sort the most relevant entities and properties first.
     \item Parse partially built triples to identify candidates for proposals.
     \item Generate suggestions for partially built queries that allow users to select available properties and entities on the go.
-    \item Test and optimize the implementation for large-scale datasets such as Wikidata.
+    \item Test and optimize the implementation for a large-scale dataset such as Wikidata.
     \item Encapsulate the implementation as a backend endpoint.
     \item Integrate this backend with an existing user interface for testing, evaluation and optimization.
 \end{itemize}
@@ -177,16 +157,16 @@ To accomplish the previous objectives, this work will be done following these st
     \item Create the index with a structure that enables autocompletion and keyword searching.
     \item Create a parsing method for partial SPARQL queries.
     \item Traverse those queries and calculate the correct suggestions.
-    \item Develop, test and optimize the system to allow for real time usage.
+    \item Develop, test and optimize the system to allow for real-time usage.
     \item Integrate the index with an existing user interface.
-    \item Run and compare usability, correctness and performance test results against the non-specialised indexed endpoints.
+    \item Run and compare correctness and performance test results against the non-specialised indexed endpoints.
 \end{itemize}
 
 \section{Expected results}
 
-This work focuses on providing an easy way for users, with no prior knowledge of the SPARQL query syntax, nor the data structure, to query and explore a large-scale RDF dataset. The main contribution of our system it to provide efficient, over-approximated auto-completion features for users building their SPARQL queries. 
+This work focuses on providing an easy way for users, with no prior knowledge of the SPARQL query syntax, nor the data structure, to query and explore a large-scale RDF dataset. The main contribution of our system is to provide efficient, over-approximated auto-completion features for users building their SPARQL queries. 
 
-A second contribution is that entities and properties stored in an indexed triplestore can be then queried via keyword search and the results are displayed sorted by relevance. This enriches the usage experience of RDF datasets by providing lookup access via \textit{labels}, \textit{descriptions} or \textit{alternative labels} for the queried data.
+A second contribution is that entities and properties stored in an indexed triplestore can then be queried via keyword search and the results are displayed sorted by relevance. This enriches the usage experience of RDF datasets by providing lookup access via \textit{labels}, \textit{descriptions} or \textit{alternative labels} for the queried data.
 
 We have developed a prototype autocompletion index working as a backend for RDFExplorer~\cite{Vargas2019}, an open source visual query system working with the Wikidata Query Service~\cite{wikidataQueryService}. Our index has been built with the Wikidata NTriples dump, consisting of over 4.5 billion triples\footnote{As per February 2020}. 
 
@@ -195,11 +175,10 @@ Our system acts as a Web Service that sits between the user interface and a SPAR
 The main evaluation criteria for our system are defined as follows:
 
 \begin{itemize}
-    \item Ease of use to explore and query the Wikidata RDF dataset
     \item Performance of the implementation
     \item Correctness of the autocomplete suggestions
 \end{itemize}
 
 \section{Structure of this Work}
 
-\textbf{To be completed in the end.}
+This work is divided as follows: in \autoref{chap:background} we talk about the background of this work to understand the chapters that follow; we will introduce some basic concepts such as the Semantic Web, RDF, SPARQL and explain the state of the art in query builder interfaces. After this, in \autoref{chap:overview}, we give an overview of the system: how the system is designed and what user interactions are available. We continue with \autoref{chap:Backend} in which we propose indexing and approximation techniques for generating suggestions based on an existing RDF dataset, an inverted index and partially completed user queries. In \autoref{chap:Frontend} we introduce our proof of concept: we integrate our system with an existing query builder interface. With this proof of concept ready, we will present our results in \autoref{chap:evaluation}; here we discuss the performance and correctness of our system. We finalize this work in \autoref{chap:Conclusion}, where we explain the existing limitations of our system, and present a discussion of future work.

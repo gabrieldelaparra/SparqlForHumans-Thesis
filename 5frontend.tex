@@ -1,24 +1,24 @@
-\chapter{Frontend}
+\chapter{Use case}
 \label{chap:Frontend}
 
 As a proof of concept, we have integrated our backend with a user interface. 
 Originally we planned to build one from scratch, but while doing our research on the state of the art, we stumbled upon several existing alternatives. 
 A very interesting one is RDFExplorer, developed by Vargas et al.~\cite{Vargas2019}. 
-In their design, Vargas proposes a language and a visual interface that allow users to build and execute graph-based queries in an easy to use system. 
-Their claim is that their work allows lay users to express graph-pattern queries better than existing interfaces with similar expressiveness. 
+In their design, Vargas et al. propose a language and a visual interface that allow users to build and execute graph-based queries in an intuitive way. 
+Their claim is that their work allows non-expert users to express graph-pattern queries better than existing interfaces with similar expressiveness. 
 
 In this chapter we will focus on the proof of concept of our design: 
-providing users query-terms suggestions while they are building SPARQL queries. 
+providing users query-term suggestions while they are building SPARQL queries. 
 That said, while we are using RDFExplorer as our user interface, any user interface that would provide users suggestions for their SPARQL query building process would be a valid candidate.
 
-We will start by describing the RDFExplorer system and some of the issues of it exhibits while providing suggestions, mainly because of the way it gets suggestions directly from the Wikidata endpoint results. 
+We will start by describing the RDFExplorer system and some of the issues it exhibits while providing suggestions, mainly because of the way it gets suggestions directly from the Wikidata endpoint results. 
 We will then proceed to describe an integration with our backend API to get better response times while parallelizing access to both our local specialized index and the remote endpoint.
 
 \section{RDFExplorer}
 
 RDFExplorer is a query building interface that allows users to visually create queries by adding entities and properties as they would add nodes and edges in a graph. The following is an example of a query built via RDFExplorer. In it, \texttt{?var1} refers to instances of \texttt{human} with \texttt{place of birth} in \texttt{Honolulu}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
         \includegraphics[width=.8\linewidth]{imagenes/rdfExplorer1.png}
         \caption{Building a query with RDFExplorer.}
@@ -27,9 +27,9 @@ RDFExplorer is a query building interface that allows users to visually create q
 
 In the process of building the graph of \autoref{fig:rdfExplorer1}, users can go through the state of \autoref{fig:rdfExplorer_nearTimeout}. 
 In this intermediate state neither \textit{place of birth} nor \texttt{Honolulu} are yet given. 
-In fact, this might be a very common state in many user given queries. 
+In fact, this might be a very common state in the initial queries built by users, where they construct the graph structure of the query and then look to replace variables with specific constants. 
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
         \includegraphics[width=0.8\linewidth]{imagenes/near timeout query.png}
         \caption{Getting suggestions for \texttt{?prop1} takes around 45 seconds on direct queries to the Wikidata Endpoint.}
@@ -57,20 +57,24 @@ SELECT DISTINCT ?prop1 ?prop1Label WHERE {
 } LIMIT 10
 \end{minted}
 
-One of the issues that users of the current version of RDFExplorer faces, is that suggestions directly from the Wikidata remote endpoint for \textit{?prop1} in \autoref{fig:rdfExplorer_nearTimeout} take around 45 seconds to return, which is probably not the best user experience while building queries. It is also important to consider that the user might change, add or remove any of the edges and nodes during that time, with which the query will change and be re-sent to the endpoint, resulting in users having no suggestions that allow them to properly explore a dataset. 
+One of the issues that users of the current version of RDFExplorer faces, is that suggestions directly from the Wikidata remote endpoint can take a long time, or even time out. For example, the suggestions for \textit{?prop1} in \autoref{fig:rdfExplorer_nearTimeout} take around 45 seconds to return, which is not the best user experience while building queries. It is also important to consider that the user might change, add or remove any of the edges and nodes during that time, with which the query will change and be re-sent to the endpoint, resulting in users having no suggestions that allow them to properly explore a dataset. 
 
 In other cases such as in \autoref{fig:rdfExplorer_timeout}, the results will never return if the user asks for suggestions for \texttt{?prop4}, as the underlying query will require a join that generates a very large number of intermediate results. Such queries can be encountered frequently as users will commonly create various nodes to represent the initial structure of their query and then begin to replace variables with the terms they require. 
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
         \includegraphics[width=0.7\linewidth]{imagenes/timeout query.png}
         \caption{A timeout query on RDFExplorer.}
         \label{fig:rdfExplorer_timeout}
 \end{figure}
 
-One of the issues that our research is trying to solve, in the context of user interfaces such as RDFExplorer, is to enable users navigate through RDF dataset in almost real-time\footnote{Less than 2 seconds}, while also not limiting the results to 10, but to 100 for backend queries. We do this by approximating results as was seen in  \autoref{chap:Backend}.
+One of the issues that our research is trying to solve, in the context of user interfaces such as RDFExplorer, is to enable users to navigate through RDF datasets in almost real-time\footnote{Less than 3 seconds}, while also not limiting the results to 10, but to 100 for backend queries. We do this by approximating results as was seen in \autoref{chap:Backend}.
 
-Our focus during this integration, is to compare how different endpoints affect the user experience. It is not in our focus to optimize or make changes to the RDFExplorer  front-end.
+Our focus during this integration, is to compare how different endpoints affect response times. It is not in our focus to make changes to the RDFExplorer interface.
+
+% ##############################################################################################
+% ##############################################################################################
+% ##############################################################################################
 
 \section{Integration as proof of concept}
 
@@ -85,9 +89,9 @@ Some code changes were required for our integration:
 
 To get into the details of our integration, we will start by showing the existing architecture of RDFExplorer in \autoref{fig:uiBeforeRequests}. In it, we can see how the system is originally directing its request directly to the Wikidata Endpoint. 
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-        \includegraphics[width=0.55\linewidth]{imagenes/uiBeforeRequest.png}
+        \includegraphics[width=0.4\linewidth]{imagenes/uiBeforeRequest.png}
         \caption{Requests before integration}
         \label{fig:uiBeforeRequests}
 \end{figure}
@@ -120,18 +124,18 @@ LIMIT 10
 B             
 & \begin{minipage}[t]{0.85\linewidth}
 \begin{minted}{json}
-{ "head" : 
+{"head" : 
   { "vars" : 
     [ "prop1", "prop1Label" ] 
   },
-  "results" : {
-    "bindings" : [ {
-      "prop1" : {
-        "type" : "uri",
-        "value" : "http://www.wikidata.org/prop/direct/P611"
-      }, 
-    ...
-    }  ]  }  }
+"results" : {
+  "bindings" : [ {
+    "prop1" : {
+      "type" : "uri",
+      "value" : "http://www.wikidata.org/prop/direct/P611"
+    }, 
+    // other bindings/variables
+  }  ]  }}
 \end{minted}
 \end{minipage}
 \\
@@ -140,9 +144,9 @@ B
 \label{table:uiBeforeRequest}
 \end{table}
 
-After our integration, the system architecture is as in \autoref{fig:uiAfterArchitecture}. It can be now seen that the system directs its requests to our backend, where the requests are parallelized to both our local specialized index and to the remote Wikidata endpoint.
+After our integration, the system architecture is as seen in \autoref{fig:uiAfterArchitecture}. It can now be seen that the system directs its requests to our backend, where the requests are parallelized to both our local specialized index and to the remote Wikidata endpoint.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
         \includegraphics[width=\linewidth]{imagenes/uiAfterRequest.png}
         \caption{Architecture and requests after integration}
@@ -153,9 +157,9 @@ As can be seen in \autoref{table:uiAfterRequest1} and \autoref{table:uiAfterRequ
 \begin{itemize}
     \item \texttt{A:} The UI now sends a JSON object of the query graph.
     \item \texttt{B:} Our response has changed from the original Wikidata response. We now send a different JSON Object.
-    \item \texttt{C1} and \texttt{D1} are internal, so no requests and responses are sent, nevertheless, they are showed in the schema for reference. The results from D1 are converted to \texttt{B}.
-    \item \texttt{C2:} Is a simplified SPARQL query with no \texttt{OPTION} section.
-    \item \texttt{D2:} Is the same Wikidata response. It is parsed by our system and converted to \texttt{B}.
+    \item \texttt{C1} and \texttt{D1} are internal, so no requests and responses are sent; nevertheless, they are shown in the schema for reference.
+    \item \texttt{C2:} Is a SPARQL basic graph pattern.
+    \item \texttt{D2:} Is the same Wikidata response. The results from either D1 or D2 will be parsed by our system and converted to \texttt{B} depending on the time outs set and the response times encountered.
 \end{itemize}
  
 \begin{table}[h]
@@ -166,35 +170,40 @@ Action & Data \\
 A              
 & \begin{minipage}[t]{0.85\linewidth}
 \begin{minted}{json}
-{ "nodes": [ {
-      "id": 0, "name": "var0",
-      "uris": [ ]
-    } ...],
-  "edges": [ {
-      "id": 0, "name": "prop0",
-      "uris": [],
-      "sourceId": 0, "targetId": 1
-    } ... ] }
-
+{"nodes": [ {
+  "id": 0, "name": "var0",
+  "uris": [ ]
+  },
+  // other nodes
+],
+"edges": [ {
+  "id": 0, "name": "prop0",
+  "uris": [],
+  "sourceId": 0, "targetId": 1
+  },
+  // other edges
+]}
 \end{minted}
 \end{minipage}
 \\ \\ \\
 B             
 & \begin{minipage}[t]{0.85\linewidth}
 \begin{minted}{json}
-{
-"nodes": {
- "0": {
+{"nodes": [ {
   "id": 0, 
-  "values": {
+  "suggestions": {
    "Q2": {
      "label": "Earth",
      "uri": "http://www.wikidata.org/entity/Q2"
-    } } },
- ...  
-"edges": {
-...}
-} 
+    }, 
+    // other suggestions
+    } 
+  },
+  // other nodes
+  ], 
+"edges": [ 
+  // edges with suggestions
+  ]}
 \end{minted}
 \end{minipage}
 \\
@@ -216,6 +225,9 @@ PREFIX ...
 SELECT ... 
 WHERE {
   ?s ?p ?o .
+  FILTER(STRSTARTS(STR(?s), "wd:") .
+  FILTER(STRSTARTS(STR(?p), "wdt:") .
+  FILTER(STRSTARTS(STR(?o), "wd:") .
 } 
 LIMIT 100
 \end{minted}
@@ -224,7 +236,7 @@ LIMIT 100
 D2             
 & \begin{minipage}[t]{0.85\linewidth}
 \begin{minted}{json}
-{ "head" : 
+{"head" : 
   { "vars" : 
     [ "prop1", "prop1Label" ] 
   },
@@ -234,8 +246,8 @@ D2
         "type" : "uri",
         "value" : "http://www.wikidata.org/prop/direct/P611"
       }, 
-    ...
-    }  ]  }  }
+    // other bindings/variables
+    }  ]  }}
 \end{minted}
 \end{minipage}
 \\
@@ -244,24 +256,24 @@ D2
 \label{table:uiAfterRequest2}
 \end{table}
 
-Without going into the code nuisances for our integration, we rather provide some high-level details on the changes required for our integration. 
+Without going into the code nuances for our integration, we rather provide some high-level details on the changes required for our integration. 
 
 Regarding \texttt{A}, originally RDFExplorer sent a SPARQL request to the Wikidata Endpoint, but internally handled a graph object. We considered that using the graph model, which is one step above before the graph-to-SPARQL conversion, could be more flexible for future integrations, so we started our integration there.
 
-The RDFExplorer graph model is a common graph implementation, and also very similar to the one that we are using. In fact, the RDFExplorer implementation has more data values for nodes and edges, which we do not require and thus trimmed for the request. The graph model using for the requests follows the following structure:
+The RDFExplorer graph model is a common graph implementation, and also very similar to the one that we are using. In fact, the RDFExplorer implementation has more data values for nodes and edges, which we do not require and thus trimmed for the request. The graph model using for the requests is based on the following structure:
 \begin{minted}{json}
-{ "nodes" : { "id", "uris"[ ], "name" },
-  "edges" : { "id", "uris"[ ], "name", "sourceId", "targetId" } }
+{"nodes" : { "id", "uris"[ ], "name" },
+ "edges" : { "id", "uris"[ ], "name", "sourceId", "targetId" }}
 \end{minted}
 
 Some additional changes, while not required, are that we now check whether the graph  changes during the query construction. Originally, the RDFExplorer UI will send a new request for any changes in the node/edge coordinates or selection. While this is not required, it improves the overall performance since changes to the nodes positions do not trigger a new request now. 
 
-The response that we return in \texttt{B} has also changed. Initially RDFExplorer is waiting for a JSON response from Wikidata. Our integration response will include all the required data by the UI, but with some changes in the structure. 
+The response that we return in \texttt{B} has also changed. Initially RDFExplorer is waiting for a JSON response from Wikidata. Our integration response will include all the data required by the UI, but with some changes in the structure. 
 
 The response from our system is as follows:
 \begin{minted}{json}
-{ "nodes": { "id", "values": [ { "uri", "label" }, ... ], ... },
-  "edges": { "id", "values": [ { "uri", "label" }, ... ], ... } }
+{"nodes": { "id", "values": [ { "uri", "label" }, ... ], ... },
+ "edges": { "id", "values": [ { "uri", "label" }, ... ], ... }}
 \end{minted}
 
 With these changes in place, our RDFExplorer client can now query to our local endpoint and give users suggestions while building SPARQL queries in the graph-based user interface.

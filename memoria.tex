@@ -8,7 +8,7 @@
 
 \depto{Departamento de Ciencias de la Computación}
 \author{Gabriel Ignacio De la Parra Urrejola}
-\title{Autocompletion for SPARQL Exploration and Querying}
+\title{Autocompletion for SPARQL-based exploration and querying}
 \auspicio{}
 \date{2020}
 \guia{Aidan Hogan}
@@ -21,9 +21,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-% \usepackage{tabularx} 
 \usepackage{float}
 \usepackage{minted}
+\setminted{fontsize=\footnotesize,linenos,tabsize=2,frame=single,samepage}
 \usepackage{hyperref}
 \usepackage{soul}
 \usepackage{caption}
@@ -39,7 +39,17 @@
 \maketitle
 
 \begin{abstract}
-Traduccion del abstract al castellano.
+En esta investigación presentamos técnicas de autocompletado para sugerir términos en tareas de exploración y consulta sobre conjuntos de datos RDF de gran escala. 
+Nuestros métodos asisten a los usuarios a generar consultas sobre un conjuntos de datos existente.
+Funciona con un índice customizado de las entidades y propiedades del conjuntos de datos, basado en los tipos de sujetos y objetos; y las propiedades entrantes y salientes.
+Utilizamos PageRank para priorizar las sugerencias más importantes. 
+Dado que sugerir los términos correctos puede ser demasiado costoso para ciertas construcciones de grafos, el objetivo de nuestra investigación es sugerir términos relevantes en cada paso, que no conduzcan a tiempos de espera indefinidos, como ocurre con las técnicas de autocompletado existentes.
+Para lograr este objetivo se hace un balance con la precisión de los resultados y los tiempos de respuesta. 
+En este balance, se pueden proponer términos adicionales no-relevantes que conducen a resultados vacíos en la consulta, pero se propondrán siempre todos los términos pertinentes.
+Nuestra investigación permite tanto a los usuarios técnicos, como a los no técnicos, seleccionar el término deseado, ya sea para tareas de consulta o exploración, incluidos los casos en que el usuario no esté familiarizado con el conjunto de datos.
+Hemos probado nuestros métodos indexando un repositorio (dump) de Wikidata, demostrando la escalabilidad. 
+Hemos implementado nuestros métodos dentro de una interfaz de usuario llamada RDFExplorer: un sistema de consulta y exploración visual para SPARQL, que permite a los usuarios no-técnicos, crear consultas de forma visual. 
+Nuestros métodos también pueden aplicarse a otras interfaces SPARQL existentes, como la Wikidata Query Tool; y también pueden ocuparse con otros conjuntos de datos RDF.
 \end{abstract}
 
 \begin{dedicatoria} % opcional
