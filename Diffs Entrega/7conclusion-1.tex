@@ -1,0 +1,67 @@
+\chapter{Conclusion}
+\label{chap:Conclusion}
+
+This research intends to support users in finding data from the web. More specifically, we intend to help users to explore, navigate and build queries within the Semantic Web context. During the research and development of this project, while learning about the theory and the technology behind, we have collected some observations that we would like to discuss.
+
+Graph databases and especially RDF databases require users to start thinking in terms of graphs or triple patterns. While some may argue that we unconsciously do this all the time, our current data modelling approach is far from naturally expressing ideas and questions in subject-predicate-object triple patterns or other graph data structures.
+
+While this user-to-graph gap is continuously being approached by researchers with works such as: translations between natural language and RDF, ontology mappings, user interfaces or others; there is still a gap between how users think and model relationships within the data and how it is actually stored in RDF datasets.
+
+As an example of this, let us present a simple use case example of how this kind of technology could be used for: It would be interesting to query for songs from a composer that wrote the music for a movie, and search for other albums/songs that were written by the composer. A direct approach to this would be to search (e.g.: Google) for information about the songs, search for the movie, composer and search his works. While this is what most users would probably do, the information about each of these steps can be in different sources: songs could be in Spotify, movies in IMDB, composer in Wikipedia. It is also possible that all the data is already in RDF datasets.
+
+Going for an RDF approach, the first step would be to express the query in s-p-o triple patterns; but there is a second and more important requirement: users need some knowledge about how the data is stored: are songs writtenBy composer or is the composer authorOf a song? Going a bit further, what if the data is structured in a way that the album was writtenBy and the songs are partOf the album? In this case, an additional triple pattern statement is required to properly formulate the query. Situations like these are not naturally understood by users and require some extra work for proper technology adoption.
+
+This work is set in the context where users already understand that they need to express their thoughts in s-p-o triple patterns and that they might need to explore the data in order to understand the existing relationships in the dataset, while possibly needing to invert relations or make assumptions about the data in order to get some answers.
+
+In this existing context, translating user queries into answers (based on RDF data stores), is accessed through SPARQL queries and endpoints. While there are some interesting alternatives to the SPARQL query syntax that could aid users to intuitively build queries, these still rely on SPARQL endpoints, which have some time out issues for retrieving results.
+
+Given this scenario, our goal is to help users navigate through existing large-scale RDF datasets: "which properties exist between different types of entities" or "how are entities linked through properties" are some of the questions that we would like users to be able to answer while exploring RDF triplestores. In the same context, we would like to provide users with or without any SPARQL syntax knowledge and with little knowledge about the RDF dataset structure to be able to answer these questions.
+
+From our tests and results, we can conclude that our system works according to our expectations: for user-specified graph patterns that would usually timeout in SPARQL endpoints, our system can provide suggestions for both nodes and edges (entities and properties) that can help users complete their queries and get exact results in reasonable time.
+
+In this chapter we are going to cover the main results of our work: 
+we will discuss some of the methods used for our implementation and summarize the main results for both runtimes and correctness. 
+We will finish the chapter with certain known limitations and some proposals for future work: 
+like in every research work, there are several open questions and paths for improvement. 
+While usage and adoption could help identify more use-cases and optimizations, 
+we will discuss those points that we currently consider the most relevant.
+
+% ##############################################################################################
+% ##############################################################################################
+% ##############################################################################################
+
+\section{Main Results}
+
+Our claim is that our system can provide users over-approximated suggestions with full recall in a fraction of the time required to
+generate exact results using the remote endpoint. We also expect our system to provide reasonable precision, although some incorrect suggestions will be returned (by which we mean suggestions that, if chosen, will lead to a query generating empty results).
+
+To achieve this we first pre-process and index a large-scale RDF dataset dump, which takes about 109 hours for the 41GB Wikidata compressed dump with 5,130 million of triples (around 75 seconds for a million triples). The final index output is less than a quarter of the size of the original compressed input: around 9GB. 
+
+For our indexing engine, we have used Lucene for storage along with PageRank and TF-IDF for sorting our data. This approach allows for out-of-the-box text-based lookups with relevance and importance ordering, while taking advantage of the existing data relationships to prioritize results. For accessing our service, our system is built as a backend that sits between the client's user interface and a remote SPARQL endpoint. Several types of requests can be done: term lookup, query for entity/property Id, input a SPARQL query or input a graph query.
+
+For our tests we have integrated our system with the RDFExplorer visual query builder interface and, as mentioned before, we have indexed the Wikidata dataset dump. To get an understanding of our performance, we have selected 67 properties and generated four types of queries with each, providing 268 test cases. For each test, we run queries in parallel on both the local specialized index and the remote SPARQL endpoint. From the 268 test cases we are only comparing the results for 78 tests: most of tests time out on the remote endpoint (50 seconds) and provide no results to compare with 
+
+The results of these 78 tests show, as we had expected, that our system returns over-approximated results: we achieve a high recall (99.4\% $\sim$ 100\%) and a low precision (0.38\% $\sim$ 59.27\%). Since our methods for indexing avoid the individual triple relations between subject-predicate-object, all local results will be calculated using the types of the entities and this expands the results to all possible triples in the involved types. This explains both the low precision and the high recall. The non-100\% recall is explained due to changes in the Wikidata content after building our local index. We have examined triples from previous dumps and several changes are made to the data: properties are replaced, predicates are modified, added, removed and new relations are constructed. Based on this, it is expected to get a performance degradation as the time passes and the data changes.
+
+Regarding runtime comparisons, we have identified that certain queries, especially those with incoming edges are harder for the remote Wikidata SPARQL endpoint to resolve and usually turn into timeout. This timeout can be handled by setting a limit in user queries, but since our intent was to compare the whole set of results, we left this limit out of the queries. Another point to mention is the response times of our work: while we consider that the results make the user interface usable during query building, 2--3 seconds is quite high for current day standards of millisecond response times and some improvement could be achieved there.
+
+% ##############################################################################################
+% ##############################################################################################
+% ##############################################################################################
+
+\section{Limitations and future work}
+\label{chap:futureWork}
+
+In this section we present some of our known limitations and some points that we think are open for future work.
+
+The first constraint of our system is that our system currently supports English-only labels and descriptions. While this limitation is easy to overcome, it implies that our pre-processing and indexing process will take longer and in the end, become larger in size. 
+
+Also related to the input triples, we have excluded all triples with datatypes objects (as in subject-predicate-object). We foresee that this could be integrated in our system by adding several additional parent types: \texttt{string}, \texttt{integer}, \texttt{datetime} and so on. In our study of the Wikidata triplestore, we found out that of the 7,559 properties available in Wikidata, only 1,282 or 17\% are used in our system. This has major implications: indexing as was mentioned before (times and size), but also in the query execution times. having 589\% more properties would definitively impact not only the system performance, but also the queries that involve \texttt{string} types would probably take longer.
+
+Another limitation of our system has to do with complex queries. Currently our system only takes \texttt{SELECT/WHERE} queries (i.e., basic graph patterns) without nested queries nor filters or optionals, etc. While such features broaden the types of queries that can be expressed in SPARQL, it is not in the scope of our project to process these type of queries, but rather to support users with no SPARQL knowledge in using core features. It is worth noting however that the RDFExplorer interface provides access to the SPARQL query being built, which can be extended manually by the user in order to add such features.
+
+Something that we would like to address in the future is to keep our system up-to-date with the endpoint data. There are several ways that this can be approached: taking diffs from the remote endpoint and updating the data would be an interesting option to consider, since this task could be run on a periodical basis with low runtimes. 
+
+In \Cref{chap:Backend} we discussed how \texttt{?movie ?director ?human} could often be queried by users in the inverted relation form, which generates no results: \texttt{?human ?directed ?movie}. We believe that since our system already contains domain and range types, and calculates suggestions for the correct relation direction, our system could also be used to propose inverse relations that might help users in choosing the right property in certain scenarios.
+
+Another option would be to improve the performance of our code: while several changes could be done to optimize our code to run with the Wikidata triples, we tried not to implement hard-coded rules only valid for that specific dataset, but to make it easy to change the dataset and allow future users to implement their own filtering rules. We also agree that the presented runtimes could be improved with code changes and this would also be one the future changes that our work could implement.

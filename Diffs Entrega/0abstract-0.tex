@@ -1,0 +1,15 @@
+\begin{intro}
+
+In this work we present a novel interface to suggest terms for exploration and query tasks over large-scale RDF datasets. 
+Our method can be applied to help users express queries over an existing triplestore. 
+It works by creating an index of the dataset's entities and properties, based on the outgoing and incoming subject and object types.
+PageRank is used for ranking the suggestions. 
+Given that finding precisely the correct set of terms is often too expensive for certain graph constructs, the goal of our research is to efficiently suggest only relevant terms at each step that will not lead to timeouts, rather than all possible terms as are currently displayed by existing autocompletion techniques. 
+In order to achieve this a trade-off with correctness is done. 
+In this trade-off, additional irrelevant terms that lead to incorrect results may sometimes be proposed, but all relevant terms will be proposed.
+Our research empowers both technical and non-technical users to select the right term, either for querying or exploration tasks, including cases where the user is not familiar with the dataset.
+We have tested our method by indexing a Wikidata Dump, proving its scalability. 
+We have implemented our methods within a user interface called RDFExplorer: a Visual Query and Exploration System for SPARQL that allows non-technical users to visually create queries. 
+Our method can also be applied to other existing SPARQL interfaces such as the Wikidata Query Tool and can also be adapted to other RDF datasets.
+
+\end{intro}
