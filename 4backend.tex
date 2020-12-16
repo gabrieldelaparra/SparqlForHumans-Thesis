@@ -1,12 +1,12 @@
 \chapter{Autocompletion Techniques}
 \label{chap:Backend}
 
-In this chapter we describe the details of our system. Per \autoref{fig:architecture}, our implementation works as a backend that sits between the user interface and a remote SPARQL query endpoint. It takes SPARQL queries as input and returns suggestions for the variables in those queries. Since we are focusing on dealing with large datasets (480GB for the uncompressed Wikidata dump), direct in-memory storage/query is not possible; rather a specialized on-disk index is required.  Before we describe the details of our backend, we introduce an extended example in order to provide an overview of the system.
+In this chapter we describe the details of our system. Per \Cref{fig:architecture}, our implementation works as a backend that sits between the user interface and a remote SPARQL query endpoint. It takes SPARQL queries as input and returns suggestions for the variables in those queries. Since we are focusing on dealing with large datasets (480GB for the uncompressed Wikidata dump), direct in-memory storage/query is not possible; rather a specialized on-disk index is required.  Before we describe the details of our backend, we introduce an extended example in order to provide an overview of the system.
 
 \section{Overview}
 
 Let us consider that a user is looking for "siblings that have directed a film together". 
-Since the user might not very familiar with the available properties in a dataset such as Wikidata, it would be hard for them to directly specify the properties they require. Since they might not be familiar with SPARQL syntax it might be even harder for them to specify the required query directly on the SPARQL endpoint. Rather they choose to use a graphical query builder, like RDFExplorer~\cite{Vargas2019}. Let us consider that they have built a graph query such as the one in \autoref{fig:siblingsQueryGraph}:
+Since the user might not very familiar with the available properties in a dataset such as Wikidata, it would be hard for them to directly specify the properties they require. Since they might not be familiar with SPARQL syntax it might be even harder for them to specify the required query directly on the SPARQL endpoint. Rather they choose to use a graphical query builder, like RDFExplorer~\cite{Vargas2019}. Let us consider that they have built a graph query such as the one in \Cref{fig:siblingsQueryGraph}:
 
 \begin{figure}[H]
     \centering
@@ -15,7 +15,7 @@ Since the user might not very familiar with the available properties in a datase
         \label{fig:siblingsQueryGraph}
 \end{figure}
 
-For the example given in \autoref{fig:siblingsQueryGraph}, let us consider that some RDF triples, such as the ones presented in \autoref{fig:siblingsRDFdata}, exist. 
+For the example given in \Cref{fig:siblingsQueryGraph}, let us consider that some RDF triples, such as the ones presented in \Cref{fig:siblingsRDFdata}, exist. 
 
 \begin{figure}[H]
 \begin{minted}[]{sparql}
@@ -31,11 +31,11 @@ ex:Matrix ex:directedBy ex:LanaWachowski .
 ex:Matrix ex:directedBy ex:LillyWachoski . 
 [...]
 \end{minted}
-\caption{Example of the underlying RDF data for the query in \autoref{fig:siblingsQueryGraph}.}
+\caption{Example of the underlying RDF data for the query in \Cref{fig:siblingsQueryGraph}.}
 \label{fig:siblingsRDFdata}
 \end{figure}
 
-Depending on the Linked Data source that is used (e.g.: DBPedia, Wikidata) triples may have different identifiers and namespaces. In \autoref{fig:siblingsWikidataRDF} we present the Wikidata representation for these triples.
+Depending on the Linked Data source that is used (e.g.: DBPedia, Wikidata) triples may have different identifiers and namespaces. In \Cref{fig:siblingsWikidataRDF} we present the Wikidata representation for these triples.
 
 \begin{figure}[H]
 \begin{minted}[]{sparql}
@@ -54,16 +54,16 @@ wd:Q83495 wdt:P57 wd:Q9545711 . # Director Lana Wachowski
 wd:Q83495 wdt:P57 wd:Q9544977 . # Director Lilly Wachowski
 [...]
 \end{minted}
-\caption{Example of the Wikidata RDF data representation of \autoref{fig:siblingsRDFdata}: proper identifiers and namespaces are used.}
+\caption{Example of the Wikidata RDF data representation of \Cref{fig:siblingsRDFdata}: proper identifiers and namespaces are used.}
 \label{fig:siblingsWikidataRDF}
 \end{figure}
 
-Without knowing the resource identifiers, or knowing a few of them, and using the Wikidata Query Service~\cite{wikidataQueryService} a user might create a query that could be something like in \autoref{fig:siblingsSPARQL}. 
+Without knowing the resource identifiers, or knowing a few of them, and using the Wikidata Query Service~\cite{wikidataQueryService} a user might create a query that could be something like in \Cref{fig:siblingsSPARQL}. 
 For the example query, we have added some of the basic identifiers, such as \texttt{wdt:P31} (\textit{instanceOf}), \texttt{wd:Q5} (\textit{Human}) and \texttt{wd:Q11424} (\textit{Film}), but these might also be variables\footnote{We differentiate constant from variables: a constant in our example would be Human (Q5) or instance of (P31). All the other elements, starting with '?' are variables. Our system will propose results only for variables.}. 
 In such a case, users could search values to replace variables via keyword lookup (or leave them as variables and use our system to select a value). 
 We have added these values to further explain our backend. We have also added some properties, such as \texttt{?sibling} and \texttt{?director} as variables; we will explain how a user can get suggestions for these variables.
 We remark that in practice these variables will likely have generic labels such as \texttt{?var1}, \texttt{?var2}, etc., where we add variables with more intuitive labels for illustration purposes. 
-We would also like to note that some relations, like director, can be a tricky. One could think that the relation is in the other way: e.g.: \texttt{?human directed ?movie}. We will discuss more about this in our future work section \autoref{chap:futureWork}.
+We would also like to note that some relations, like director, can be a tricky. One could think that the relation is in the other way: e.g.: \texttt{?human directed ?movie}. We will discuss more about this in our future work section \Cref{chap:futureWork}.
 
 \begin{figure}[H]
 \begin{minted}[]{sparql}
@@ -88,7 +88,7 @@ SELECT * WHERE {
 \label{fig:siblingsSPARQL}
 \end{figure}
 
-The purpose of our system will be to guide users in going from the previously constructed query in \autoref{fig:siblingsSPARQL} to a more complete query such as in \autoref{fig:siblingsSPARQLFull}.
+The purpose of our system will be to guide users in going from the previously constructed query in \Cref{fig:siblingsSPARQL} to a more complete query such as in \Cref{fig:siblingsSPARQLFull}.
 
 \begin{figure}[H]
 \begin{minted}[]{sparql}
@@ -112,11 +112,11 @@ SELECT * WHERE {
 \label{fig:siblingsSPARQLFull}
 \end{figure}
 
-Our system can also provide suggestions for \texttt{?human1}, \texttt{?human2} and \texttt{?movie} (such as \textit{Lana Wachowski}, \textit{Lilly Wachowski} and \textit{The Matrix}); which is not what we need in the current scenario, but could be in other scenarios. Once a query is shaped as presented in \autoref{fig:siblingsSPARQLFull}, it can be evaluated to get values for these variables. The query expressed in \autoref{fig:siblingsSPARQLFull} can be run directly on a SPARQL endpoint such as \url{https://query.wikidata.org/} and to date, 125 siblings will be displayed as results. Likewise, we could in theory run the query in \autoref{fig:siblingsSPARQL} over the SPARQL endpoint to generate results, and thus return suggestions for replacing individual variables towards constructing the query of \autoref{fig:siblingsSPARQLFull}. However, the query of \autoref{fig:siblingsSPARQL} times out on the public Wikidata endpoint: with so many variables, it generates too many intermediate results for the endpoint to process in the time limit of 50 seconds. For this reason we propose methods to generate approximate suggestions to replace individual variables of such queries.
+Our system can also provide suggestions for \texttt{?human1}, \texttt{?human2} and \texttt{?movie} (such as \textit{Lana Wachowski}, \textit{Lilly Wachowski} and \textit{The Matrix}); which is not what we need in the current scenario, but could be in other scenarios. Once a query is shaped as presented in \Cref{fig:siblingsSPARQLFull}, it can be evaluated to get values for these variables. The query expressed in \Cref{fig:siblingsSPARQLFull} can be run directly on a SPARQL endpoint such as \url{https://query.wikidata.org/} and to date, 125 siblings will be displayed as results. Likewise, we could in theory run the query in \Cref{fig:siblingsSPARQL} over the SPARQL endpoint to generate results, and thus return suggestions for replacing individual variables towards constructing the query of \Cref{fig:siblingsSPARQLFull}. However, the query of \Cref{fig:siblingsSPARQL} times out on the public Wikidata endpoint: with so many variables, it generates too many intermediate results for the endpoint to process in the time limit of 50 seconds. For this reason we propose methods to generate approximate suggestions to replace individual variables of such queries.
 
-For our system to work (in order to get from \autoref{fig:siblingsSPARQL} to \autoref{fig:siblingsSPARQLFull}), first our specialized index must be built and then queries will be processed. Our index differs from a SPARQL endpoint index in that for each triple's \textit{property}, our index does not store the values of the \textit{entities} linked to that \textit{property}, but rather the \textit{types} of those \textit{entities}. This removes the one-to-one relation in triples, thus creating approximations of the possible available values while improving query times.
+For our system to work (in order to get from \Cref{fig:siblingsSPARQL} to \Cref{fig:siblingsSPARQLFull}), first our specialized index must be built and then queries will be processed. Our index differs from a SPARQL endpoint index in that for each triple's \textit{property}, our index does not store the values of the \textit{entities} linked to that \textit{property}, but rather the \textit{types} of those \textit{entities}. This removes the one-to-one relation in triples, thus creating approximations of the possible available values while improving query times.
 
-Our system will actually build two indexes. The first is an \textit{entities} index with the structure shown in \autoref{fig:siblingsEntityIndex}. For each resource we will add a database entry. In the example of \autoref{fig:siblingsEntityIndex}, the `...' as in line 1, are to show that our data could have other values not listed in the example. 
+Our system will actually build two indexes. The first is an \textit{entities} index with the structure shown in \Cref{fig:siblingsEntityIndex}. For each resource we will add a database entry. In the example of \Cref{fig:siblingsEntityIndex}, the `...' as in line 1, are to show that our data could have other values not listed in the example. 
 \begin{figure}[H]
 \begin{minted}[]{css}
 LanaWachowski.Type = [Human,...]
@@ -139,11 +139,11 @@ Film.Type = [...]
 Film.Properties = [...]
 Film.InverseProperties = [instanceOf,...]
 \end{minted}
-\caption{Representation of the entity index for the \autoref{fig:siblingsRDFdata} data.}
+\caption{Representation of the entity index for the \Cref{fig:siblingsRDFdata} data.}
 \label{fig:siblingsEntityIndex}
 \end{figure}
 
-Afterwards, a \textit{properties} index will be built as in \autoref{fig:siblingsPropertyIndex}. As before, we are adding `...' on the fields to show that our fields could have additional values not included in our example.
+Afterwards, a \textit{properties} index will be built as in \Cref{fig:siblingsPropertyIndex}. As before, we are adding `...' on the fields to show that our fields could have additional values not included in our example.
 \begin{figure}[H]
 \begin{minted}[]{css}
 siblingOf.Domain = [Human,...]
@@ -155,11 +155,11 @@ director.Range = [Human,..]
 instanceOf.Domain = [Human, Film,...]
 instanceOf.Range = [...]
 \end{minted}
-\caption{Representation of the property index for the \autoref{fig:siblingsRDFdata} data.}
+\caption{Representation of the property index for the \Cref{fig:siblingsRDFdata} data.}
 \label{fig:siblingsPropertyIndex}
 \end{figure}
 
-Once the index is built, queries can be processed. Given a query graph, our system will first check all of the graph's nodes and edges for constants. For each constant element, we will annotate that element: nodes with the types of that constant; and edges with the constant's domain- and range-types (as seen on \autoref{chap:motivation}). 
+Once the index is built, queries can be processed. Given a query graph, our system will first check all of the graph's nodes and edges for constants. For each constant element, we will annotate that element: nodes with the types of that constant; and edges with the constant's domain- and range-types (as seen on \Cref{chap:motivation}). 
 
 From our example, we know the following:
 
@@ -255,7 +255,7 @@ Thus the system can return possible results that would otherwise keep the user i
 The chapter concludes by describing our application interface, which works as the entry point of our system. 
 It will take requests from different services, such as SPARQL query editors or SPARQL visual explorers and send the information either to the graph parsing module, for SPARQL queries; 
 or directly to the index, for keyword search. 
-The integration with a user interface will be left for \autoref{chap:Frontend}.
+The integration with a user interface will be left for \Cref{chap:Frontend}.
 
 % ##############################################################################################
 % ##############################################################################################
@@ -402,7 +402,7 @@ Properties indexing has the following steps:
     \item Index properties
 \end{itemize}
 
-A depiction of both of these processes can be seen in \autoref{fig:indexing}.
+A depiction of both of these processes can be seen in \Cref{fig:indexing}.
 
 \begin{figure}[H]
     \centering
@@ -416,7 +416,7 @@ A depiction of both of these processes can be seen in \autoref{fig:indexing}.
 \subsubsection{Inverted Index}
 
 Data relating to entities is indexed using \textit{Lucene}. 
-As discussed in \autoref{chap:lucene}, Lucene is a search engine library, mostly suitable for text indexing and searching capabilities. 
+As discussed in \Cref{chap:lucene}, Lucene is a search engine library, mostly suitable for text indexing and searching capabilities. 
 This enables out-of-the-box keyword-search for entities and properties.
 As mentioned previously, Lucene adds an additional relevance metric based on TF-IDF, which complements the PageRank value that we will calculate later.
 
@@ -431,7 +431,7 @@ Each entity-document contains the following fields:
     \item \textbf{Label:} Text field.  Value that represents a name for the resource (that may be ambiguous).  In the Wikidata dump, the label is the value of the triples with the predicate \url{http://www.w3.org/2000/01/rdf-schema#label}. 
     \item \textbf{AltLabel:} Text field. Other names the resource is known by.  The predicate for these values in the dump is \url{http://www.w3.org/2004/02/skos/core#altLabel}. This field can store multiple values for the same document.
     \item \textbf{Description:} Text field. Small description of the resource, which helps to disambiguate the resource from others with the same or similar labels. Triples with a description have the predicate \url{http://schema.org/description}.
-    \item \textbf{InstanceOf:} String field. Indicates if the entity is a type. For example, \textit{Barack Obama (Q76)} is type \textit{Human (Q5)}. \textit{Human} has a \textit{InstanceOf} field with a \textit{"true"} value while \texttt{Barack Obama} has an InstanceOf field with \textit{"false"}.. This is based on having a property \texttt{inverse/instanceOf (P31)} on at least one incoming edge. This is possible due to adding the previously mentioned inverse relation for properties in the pre-processing stage, which when sorted groups both incoming and outgoing edges for a particular entity.
+    \item \textbf{InstanceOf:} String field. Indicates if the entity is a type. For example, \textit{Barack Obama (Q76)} is type \textit{Human (Q5)}. \textit{Human} has a \textit{InstanceOf} field with a \textit{"true"} value while \texttt{Barack Obama} has an InstanceOf field with \textit{"false"}. This is based on having a property \texttt{inverse/instanceOf (P31)} on at least one incoming edge. This is possible due to adding the previously mentioned inverse relation for properties in the pre-processing stage, which when sorted groups both incoming and outgoing edges for a particular entity.
     \item \textbf{Property:} String field. The collection of the outgoing properties that this resource has. This field can store multiple values. All values in this field are stored without their prefix. Property predicates start with  \url{http://www.wikidata.org/prop/direct/}
     \item \textbf{InverseProperty:} String field. Same as the Property field, but for incoming properties. As was mentioned before, these triples were added in the pre-processing step to the dump file.
 \end{itemize}
@@ -441,7 +441,7 @@ Each entity-document contains the following fields:
 Lucene offers relevance-based ranking (using a variant of TF-IDF) for searches. But we need importance too: a user might be searching for the term `Obama'. The reader might think about \textit{Barack Obama} as a first suggestion; though \textit{Tom Obama} or \textit{Mount Obama} might have the same relevance in terms of TF-IDF and keywords, one result is much more important than the other and thus we assume it to be of higher prior probability to be relevant to the user.
 
 In order to get the results sorted by both relevance and importance, a ranking value, calculated via PageRank, is added to our index. 
-As seen in \autoref{chap:pagerank}, PageRank was originally designed for directed graphs such as websites and their links. 
+As seen in \Cref{chap:pagerank}, PageRank was originally designed for directed graphs such as websites and their links. 
 PageRanks works by iteratively setting relevance values on nodes based on the incoming and outgoing nodes (edges pointing to other nodes). 
 In the same way, our PageRank implementation works by iteratively setting the relevance of incoming and outgoing entities through their edges. 
 
@@ -466,7 +466,7 @@ wd:Q1 wdt:P828 wd:Q323 .
 wd:Q1 <http://www.wikidata.org/prop/reverse/P1542> wd:Q323 .
 \end{minted}
 
-The index document representation for this triples is shown in \autoref{table:triplesToDocument}.
+The index document representation for this triples is shown in \Cref{table:triplesToDocument}.
 
 \begin{table}[h!]
 \centering
@@ -653,7 +653,7 @@ All nodes are checked in the same manner: if a node has a provided URI, then tha
 The next step is to mark the variable nodes as \texttt{Typed}:
 If a node is the source of an \texttt{instanceOf} property edge with a target constant, then the node is considered to be \texttt{typed}. To expand on this, let us consider the following statement: \texttt{?var1 instanceOf Human}. As a remark for this case, no other incoming and outgoing edges are available for \texttt{?var1}. We can then consider \texttt{?var1} to have the type \texttt{Human}.
 
-We can summarize this graph exploration with the pseudo-code shown in \autoref{fig:codeExploration}.
+We can summarize this graph exploration with the pseudo-code shown in \Cref{fig:codeExploration}.
 \begin{figure}[H]
 \begin{minted}[]{csharp}
 ExploreGraph (graph) {
@@ -714,12 +714,12 @@ Before diving into the details of how the results are retrieved, we will present
 
 \begin{example}
 
-Let us consider the "siblings that have directed a film together" example given in \autoref{fig:siblingsQueryGraph} and the query written for it in \autoref{fig:siblingsSPARQL}.
+Let us consider the "siblings that have directed a film together" example given in \Cref{fig:siblingsQueryGraph} and the query written for it in \Cref{fig:siblingsSPARQL}.
 
 Building such a query in a Visual Query Builder, such as RDFExplorer; or directly into the Wikidata Query Service, will time out since the graph pattern is quite complex and has many variables that can match millions of nodes in the data. We recall that our goal in such a scenario is to provide users with over-approximated suggestions, so that they can assign values to the variables until the query does not time out and the correct results are provided.
 
 Let us go through how our system will process this query. 
-As a first step, our system will explore the graph to retrieve information about it using the algorithm described in \autoref{fig:codeExploration}:
+As a first step, our system will explore the graph to retrieve information about it using the algorithm described in \Cref{fig:codeExploration}:
 \begin{minted}[frame=none]{text}
 n1, n2 are constants (Film, Human);
 e1, e2, e3 are constants (instanceOf);
@@ -772,7 +772,7 @@ Since more properties and entities are now assigned and fewer results need to be
 
 It is worth mentioning that, since we do not know if the remote endpoint will time out, both queries are sent in parallel threads. The remote endpoint query is sent right before the graph exploration. 
 In our experience while testing our system, we have observed that some user queries can be sent to the remote SPARQL endpoint and the response can come in a fraction of a second, while others can take minutes, or even time out. 
-We have run several tests with different values and the response time can vary significantly for the same query at different times. We will explore query times in more detail in section~\autoref{chap:evaluation}.
+We have run several tests with different values and the response time can vary significantly for the same query at different times. We will explore query times in more detail in section~\Cref{chap:evaluation}.
 
 In this section we will go into more detail about how both queries are built and sent. First, the details of the remote endpoint requests are revised, before discussing the local index.
 
@@ -797,12 +797,12 @@ With the previous conditions at hand, the system will send the request to the en
 
 For the local specialized index, additional graph exploration is required. The goal is: if a property is constant, project the property's domain- and range-types onto the adjacent variable-nodes; if the node is constant then project its properties onto incoming- and outgoing-variable-properties; otherwise if the node is typed, project the properties with those node types in their domain and range onto the incoming- and outgoing-variable-properties.
 
-We previously presented the example  "siblings that have directed a film together" (\autoref{fig:siblingsQueryGraph}): we covered the high-level process of how suggestions are made for variables given some constants and \texttt{instanceOf} edges. We explained how by providing suggestions, users could complete their queries with approximate suggestions until the remote endpoint returned exact results before time out. 
+We previously presented the example  "siblings that have directed a film together" (\Cref{fig:siblingsQueryGraph}): we covered the high-level process of how suggestions are made for variables given some constants and \texttt{instanceOf} edges. We explained how by providing suggestions, users could complete their queries with approximate suggestions until the remote endpoint returned exact results before time out. 
 
 In this section, we are going to explain in more detail how we do our final graph exploration and which results we will get from our local index. For this, we will start with a simple graph pattern and later progress to a more complex one.
 
 \begin{example}
-Let us consider the graph of \autoref{fig:example_graph1}.
+Let us consider the graph of \Cref{fig:example_graph1}.
 
 \begin{figure}[H]
     \centering
@@ -811,7 +811,7 @@ Let us consider the graph of \autoref{fig:example_graph1}.
         \label{fig:example_graph1}
 \end{figure}
 
-The graph on \autoref{fig:example_graph1} can be described by the following triple pattern: \texttt{v1 p1 v2}. We consider that each term may be constant or variable. If all of the elements are variables, we would let the remote endpoint handle this case (as was described in \autoref{chap:graph_exploration}). For this reason, we will assume that something in this graph is a constant: \texttt{v1}, \texttt{p1} or \texttt{v2}.
+The graph on \Cref{fig:example_graph1} can be described by the following triple pattern: \texttt{v1 p1 v2}. We consider that each term may be constant or variable. If all of the elements are variables, we would let the remote endpoint handle this case (as was described in \Cref{chap:graph_exploration}). For this reason, we will assume that something in this graph is a constant: \texttt{v1}, \texttt{p1} or \texttt{v2}.
 
 Let us consider that \texttt{p1} and \texttt{v2} are variable, but \texttt{v1} is constant. Moreover, let us consider that \texttt{v1} is known to be an instance of type \texttt{Human}.
 
@@ -874,7 +874,7 @@ In our previous example we covered the simplest of all cases. Now we would like 
 
 \begin{example}
 
-Let us consider the graph of \autoref{fig:example_graph2}. 
+Let us consider the graph of \Cref{fig:example_graph2}. 
 
 \begin{figure}[h]
     \centering
@@ -885,7 +885,7 @@ Let us consider the graph of \autoref{fig:example_graph2}.
 
 We will consider that any number of elements (nodes or properties) are constant. For each of these constants, we will propagate their types: nodes will contribute with their types to adjacent variable properties; properties will contribute with their domain- and range-types to subject and object variable nodes.
 
-Our first step will be to expand known types among neighbours. The pseudo-code in \autoref{fig:codeExpandNodes} and \autoref{fig:codeExpandEdges} depicts how this task is done for both nodes and properties (i.e., edge labels).
+Our first step will be to expand known types among neighbours. The pseudo-code in \Cref{fig:codeExpandNodes} and \Cref{fig:codeExpandEdges} depicts how this task is done for both nodes and properties (i.e., edge labels).
 
 \begin{figure}[h]
 \begin{minted}[]{csharp}
@@ -954,7 +954,7 @@ ExpandEdges(graph) {
 \label{fig:codeExpandEdges}
 \end{figure}
 
-Once we have all known types in place, we can now get values for both nodes and edges. For nodes, we will focus on the outgoing and incoming edges. From these edges, we collect: for the outgoing edges, the domain types (our node must be inside this domain); and for the incoming edges, we collect the range types (our node must also be in this range). In other words, we are going to intersect the outgoing-edges-domain-types and the incoming-edges-range-types. A high-level detail of this process can be appreciated in \autoref{fig:codeResultsNodes}.
+Once we have all known types in place, we can now get values for both nodes and edges. For nodes, we will focus on the outgoing and incoming edges. From these edges, we collect: for the outgoing edges, the domain types (our node must be inside this domain); and for the incoming edges, we collect the range types (our node must also be in this range). In other words, we are going to intersect the outgoing-edges-domain-types and the incoming-edges-range-types. A high-level detail of this process can be appreciated in \Cref{fig:codeResultsNodes}.
 
 \begin{figure}[h]
 \begin{minted}[]{csharp}
@@ -988,11 +988,11 @@ GetNodesResults(graph){
   }
 }
 \end{minted}
-\caption{Pseudo-code for expanding edge domain- and range-types.}
+\caption{Pseudo-code for returning node results.}
 \label{fig:codeResultsNodes}
 \end{figure}
 
-For edges (\autoref{fig:codeResultsEdges}), we will focus on both the source- and target-node of our edges. We first do some checks on if these nodes are constants or instances of another type. If either our source or target nodes are constant, then we have certainty of the possible values that our edge can have (we recall that we have added these values directly into our DB).
+For edges (\Cref{fig:codeResultsEdges}), we will focus on both the source- and target-node of our edges. We first do some checks on if these nodes are constants or instances of another type. If either our source or target nodes are constant, then we have certainty of the possible values that our edge can have (we recall that we have added these values directly into our DB).
 
 If the source or target node is an instance of another type (thus a variable), then we query the outgoing or incoming properties for that type: while indexing, we have collected these properties for all instances of that type. But in this case, we also explore other possible relations existing in our graph.
 
@@ -1033,7 +1033,7 @@ GetEdgesResults(graph){
   }
 }
 \end{minted}
-\caption{Pseudo-code for expanding edge domain- and range-types.}
+\caption{Pseudo-code for returning edge results.}
 \label{fig:codeResultsEdges}
 \end{figure}
 
@@ -1096,4 +1096,5 @@ As was mentioned before, our system supports several types of requests:
 The keyword search directly reverts to the specialized index. The query term works as was previously described in this chapter.
 
 With all of these components in place, our backend can accept and respond to requests from a frontend client. In the following chapter we will describe how to integrate our system with RDFExplorer as the client in order to apply our approach for a concrete use-case.
+
 

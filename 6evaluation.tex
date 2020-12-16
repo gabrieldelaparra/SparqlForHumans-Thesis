@@ -91,7 +91,7 @@ We thus decided to create a sample set based on two approaches: random and cherr
 
 For the cherry picking approach, we took an additional 37 properties that had a mix of frequency/domain/range values. We manually selected some properties that had values in between the spectrum of values and added them to the previous list, e.g.: We picked P21 (sex or gender) that has a high frequency, a high domain and a low range. We also picked P301 (category's main topic), that has a high frequency, a low domain and a high range.
 
-We took 67 sample properties in total for our tests. In \autoref{table:sampleProperties1} and \autoref{table:sampleProperties2} we present these. In this table we can observe that there is a mix of high and low values for frequency, domain and range.
+We took 67 sample properties in total for our tests. In \Cref{table:sampleProperties1} and \Cref{table:sampleProperties2} we present these. In this table we can observe that there is a mix of high and low values for frequency, domain and range.
 
 \begin{table}[]
 \resizebox{\textwidth}{!}{%
@@ -197,7 +197,7 @@ These queries would commonly be encountered as intermediary graphs in query buil
 
 In the previous section we described how we created a collection of 268 sample tests: 4 query types for 67 properties. In this section we compare the query runtime for both our local index and the remote endpoint.
 
-In \autoref{fig:runtimeCompare} a comparison is depicted between our local and remote endpoint query times. In this figure we order the queries by runtime individually for local and remote execution. From these 268 queries, 190 queries, around 70\% of the total, will time out at 50 seconds: the Wikidata Remote Endpoint API timeout; and just 78 queries will return results before the timeout. The local index times cannot be visibly identified so we have introduced also \autoref{fig:runtimeLocal}.
+In \Cref{fig:runtimeCompare} a comparison is depicted between our local and remote endpoint query times. In this figure we order the queries by runtime individually for local and remote execution. From these 268 queries, 190 queries, around 70\% of the total, will time out at 50 seconds: the Wikidata Remote Endpoint API timeout; and just 78 queries will return results before the timeout. The local index times cannot be visibly identified so we have introduced also \Cref{fig:runtimeLocal}.
 
 \begin{figure}[H]
     \centering
@@ -228,7 +228,7 @@ For this, we expect to get an over-approximation of our suggested values, meanin
         \label{fig:resultsCandles}
 \end{figure}
 
-In \autoref{fig:resultsCandles} we present the minimum and maximum results for precision, recall and F1. At the start of this chapter we mentioned that we expected a high value of recall, given that we should suggest all true-positives and that we should not have false-negatives inside our suggestions. The results in this sense are very similar to what we expected: Our results have an average of 99.40\% of recall, where the slight drop in recall is due to changes in the data between our indexing process and querying the live endpoint. Regarding precision: since we are providing over-approximated suggestions, our precision is expected to be low. As an average, we have 22\% precision and 35\% F1.
+In \Cref{fig:resultsCandles} we present the minimum and maximum results for precision, recall and F1. At the start of this chapter we mentioned that we expected a high value of recall, given that we should suggest all true-positives and that we should not have false-negatives inside our suggestions. The results in this sense are very similar to what we expected: Our results have an average of 99.40\% of recall, where the slight drop in recall is due to changes in the data between our indexing process and querying the live endpoint. Regarding precision: since we are providing over-approximated suggestions, our precision is expected to be low. As an average, we have 22\% precision and 35\% F1.
 
 It is important to note that the results that we can provide are based on the dataset dump, where any changes on the remote endpoint database will not be reflected in our local index. This implies that for any changes in the remote database, our measures will deteriorate in time against the live ones.
 
