@@ -7,11 +7,11 @@ the main components and how these relate to each other.
 This will be followed by the possible user interactions: 
 the different types of queries that can be requested to our backend as well as how these requests are handled.
 
-In this section we intend for readers to get a general overview of the work; we will go into finer detail for the individual components in \autoref{chap:Backend} and \autoref{chap:Frontend}.
+In this section we intend for readers to get a general overview of the work; we will go into finer detail for the individual components in \Cref{chap:Backend} and \Cref{chap:Frontend}.
 
 \section{System Architecture}
 
-Our system architecture is as depicted in \autoref{fig:architecture}.
+Our system architecture is as depicted in \Cref{fig:architecture}.
 
 \begin{figure}[H]
     \centering
@@ -38,12 +38,12 @@ The results are then post-processed and sent back to the user for display and se
 We will expand some more on this steps in the following sections.
 
 These last interactions, related to the UI, are not in the scope of our work; nevertheless, we have integrated our system to a visual query system for demonstration. 
-This UI integration, both for the request and the display of results, is explained in detail in \autoref{chap:Frontend}.
+This UI integration, both for the request and the display of results, is explained in detail in \Cref{chap:Frontend}.
 
 It is important to mention that before our system can provide results, it has to be initialized with an RDF dataset dump. 
 This initialization process can be divided into two sub-processes: 
 Pre-processing and Indexing. 
-The details of this initialization are described in \autoref{chap:init}. 
+The details of this initialization are described in \Cref{chap:init}. 
 
 All of the source code for the back-end is written in \textit{C\#} as a .Net Standard Library. 
 The following dependencies are used:
@@ -103,14 +103,14 @@ Since the system has been indexed for \textit{descriptions}, the desired result 
 
 The term suggestions help users to create SPARQL queries. 
 A SPARQL query is composed of multiple triple patterns.
-As seen in \autoref{chap:SPARQL}, a triple pattern can be something like \textit{"Mary eats pizza"}. 
+As seen in \Cref{chap:SPARQL}, a triple pattern can be something like \textit{"Mary eats pizza"}. 
 Lucky Mary. 
 Each triple in the SPARQL grammar is composed of three terms: 
 a \textit{subject} (\textit{"Mary"}), 
 a \textit{predicate} (\textit{"eats"}) 
 and an \textit{object} (\textit{"pizza"}). 
 
-We will now briefly describe this process' overview; the details will be revised in more detail in \autoref{chap:Backend}. 
+We will now briefly describe this process' overview; the details will be revised in more detail in \Cref{chap:Backend}. 
 We will accompany this description with some examples about the delicious pizza Mary was eating.
 
 Query construction starts by supposing that a triple pattern is always available, even when there are only variables, such as in \textit{?var1 ?prop1 ?var2}. However, triple patterns will often contain specific terms in combination with variables, as seen in the previous example.
@@ -154,24 +154,24 @@ The user can also join statements, creating more complex queries.
 
 Behind the curtains, during this query construction process the input data is read from the SPARQL query, parsed and stored into a data structure for further processing. 
 Our system will convert that query into a graph. 
-More about the conversion between SPARQL query and such graphs will be covered in \autoref{chap:parser}.
+More about the conversion between SPARQL query and such graphs will be covered in \Cref{chap:parser}.
 
 This graph will be then explored to check for relations between the nodes and the edges. 
 Each of the nodes and edges will be classified as either variables, given types or inferred types. 
 If other statements are given at this stage, a decision process involving given-types and intersections between inferred types for different incoming/outgoing properties would occur. 
 This helps the system to correctly assign types based on the explicitly given ones and the inferred ones. 
-All of this will be covered in more detail in \autoref{chap:graph_exploration}.
+All of this will be covered in more detail in \Cref{chap:graph_exploration}.
 
 Once all nodes and edges have been classified, the information will be requested in parallel threads from both sources: 
 Local Index and Remote SPARQL Endpoint. 
 The request to the remote endpoint is sent with a configurable timeout, usually of a few seconds. 
 If the remote endpoint returns values within this time, this results will be returned; otherwise, our internal local index results will be returned. The local results will only be returned if the remote endpoint request fails/times-out. 
 This double request mechanism allow us to suggest possible results that would otherwise keep the user indefinitely waiting or in the worst case, never return. 
-More on this in \autoref{chap:execution}.
+More on this in \Cref{chap:execution}.
 
 Once the results are consolidated, they will be returned to the UI which made the request. 
 For testing purposes, we have integrated our system within an existing visual SPARQL building frontend. 
-This integration is described in \autoref{chap:Frontend}.
+This integration is described in \Cref{chap:Frontend}.
 
 Before ending this chapter, we would like to emphasize something that was mentioned before. 
 Our system can provide approximate results for some triple patterns in complex queries. 

@@ -25,7 +25,7 @@ RDFExplorer is a query building interface that allows users to visually create q
         \label{fig:rdfExplorer1}
 \end{figure}
 
-In the process of building the graph of \autoref{fig:rdfExplorer1}, users can go through the state of \autoref{fig:rdfExplorer_nearTimeout}. 
+In the process of building the graph of \Cref{fig:rdfExplorer1}, users can go through the state of \Cref{fig:rdfExplorer_nearTimeout}. 
 In this intermediate state neither \textit{place of birth} nor \texttt{Honolulu} are yet given. 
 In fact, this might be a very common state in the initial queries built by users, where they construct the graph structure of the query and then look to replace variables with specific constants. 
 
@@ -38,7 +38,7 @@ In fact, this might be a very common state in the initial queries built by users
 
 In order to get results, RDFExplorer will construct a query based on the graph that the user is visually building, send a request to the remote endpoint and await for results: in our case, the Wikidata SPARQL endpoint. 
 It is to be noted that this is not the query that is shown in the user interface, but the one that is sent to the endpoint\footnote{As appears in the browser's developer tools}. 
-For our example, the graph in \autoref{fig:rdfExplorer_nearTimeout} is represented by the following SPARQL query:
+For our example, the graph in \Cref{fig:rdfExplorer_nearTimeout} is represented by the following SPARQL query:
 
 \begin{minted}{SPARQL}
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -57,9 +57,9 @@ SELECT DISTINCT ?prop1 ?prop1Label WHERE {
 } LIMIT 10
 \end{minted}
 
-One of the issues that users of the current version of RDFExplorer faces, is that suggestions directly from the Wikidata remote endpoint can take a long time, or even time out. For example, the suggestions for \textit{?prop1} in \autoref{fig:rdfExplorer_nearTimeout} take around 45 seconds to return, which is not the best user experience while building queries. It is also important to consider that the user might change, add or remove any of the edges and nodes during that time, with which the query will change and be re-sent to the endpoint, resulting in users having no suggestions that allow them to properly explore a dataset. 
+One of the issues that users of the current version of RDFExplorer faces, is that suggestions directly from the Wikidata remote endpoint can take a long time, or even time out. For example, the suggestions for \textit{?prop1} in \Cref{fig:rdfExplorer_nearTimeout} take around 45 seconds to return, which is not the best user experience while building queries. It is also important to consider that the user might change, add or remove any of the edges and nodes during that time, with which the query will change and be re-sent to the endpoint, resulting in users having no suggestions that allow them to properly explore a dataset. 
 
-In other cases such as in \autoref{fig:rdfExplorer_timeout}, the results will never return if the user asks for suggestions for \texttt{?prop4}, as the underlying query will require a join that generates a very large number of intermediate results. Such queries can be encountered frequently as users will commonly create various nodes to represent the initial structure of their query and then begin to replace variables with the terms they require. 
+In other cases such as in \Cref{fig:rdfExplorer_timeout}, the results will never return if the user asks for suggestions for \texttt{?prop4}, as the underlying query will require a join that generates a very large number of intermediate results. Such queries can be encountered frequently as users will commonly create various nodes to represent the initial structure of their query and then begin to replace variables with the terms they require. 
 
 \begin{figure}[h]
     \centering
@@ -68,7 +68,7 @@ In other cases such as in \autoref{fig:rdfExplorer_timeout}, the results will ne
         \label{fig:rdfExplorer_timeout}
 \end{figure}
 
-One of the issues that our research is trying to solve, in the context of user interfaces such as RDFExplorer, is to enable users to navigate through RDF datasets in almost real-time\footnote{Less than 3 seconds}, while also not limiting the results to 10, but to 100 for backend queries. We do this by approximating results as was seen in \autoref{chap:Backend}.
+One of the issues that our research is trying to solve, in the context of user interfaces such as RDFExplorer, is to enable users to navigate through RDF datasets in almost real-time\footnote{Less than 3 seconds}, while also not limiting the results to 10, but to 100 for backend queries. We do this by approximating results as was seen in \Cref{chap:Backend}.
 
 Our focus during this integration, is to compare how different endpoints affect response times. It is not in our focus to make changes to the RDFExplorer interface.
 
@@ -87,7 +87,7 @@ Some code changes were required for our integration:
     \item Convert the response from our backend to the RDFExplorer expected response format.
 \end{itemize} 
 
-To get into the details of our integration, we will start by showing the existing architecture of RDFExplorer in \autoref{fig:uiBeforeRequests}. In it, we can see how the system is originally directing its request directly to the Wikidata Endpoint. 
+To get into the details of our integration, we will start by showing the existing architecture of RDFExplorer in \Cref{fig:uiBeforeRequests}. In it, we can see how the system is originally directing its request directly to the Wikidata Endpoint. 
 
 \begin{figure}[h]
     \centering
@@ -96,7 +96,7 @@ To get into the details of our integration, we will start by showing the existin
         \label{fig:uiBeforeRequests}
 \end{figure}
 
-The requests and responses were originally sent as SPARQL queries and the Wikidata API was in charge of returning results as a JSON data object. Both the requests and responses depicted by \texttt{A} and \texttt{B} in \autoref{fig:uiBeforeRequests} are detailed in \autoref{table:uiBeforeRequest}.
+The requests and responses were originally sent as SPARQL queries and the Wikidata API was in charge of returning results as a JSON data object. Both the requests and responses depicted by \texttt{A} and \texttt{B} in \Cref{fig:uiBeforeRequests} are detailed in \Cref{table:uiBeforeRequest}.
 
 \begin{table}[h]
 \centering
@@ -144,7 +144,7 @@ B
 \label{table:uiBeforeRequest}
 \end{table}
 
-After our integration, the system architecture is as seen in \autoref{fig:uiAfterArchitecture}. It can now be seen that the system directs its requests to our backend, where the requests are parallelized to both our local specialized index and to the remote Wikidata endpoint.
+After our integration, the system architecture is as seen in \Cref{fig:uiAfterArchitecture}. It can now be seen that the system directs its requests to our backend, where the requests are parallelized to both our local specialized index and to the remote Wikidata endpoint.
 
 \begin{figure}[h]
     \centering
@@ -153,7 +153,7 @@ After our integration, the system architecture is as seen in \autoref{fig:uiAfte
         \label{fig:uiAfterArchitecture}
 \end{figure}
 
-As can be seen in \autoref{table:uiAfterRequest1} and \autoref{table:uiAfterRequest2}, the requests and responses in this integration have changed. The most important changes are as follows:
+As can be seen in \Cref{table:uiAfterRequest1} and \Cref{table:uiAfterRequest2}, the requests and responses in this integration have changed. The most important changes are as follows:
 \begin{itemize}
     \item \texttt{A:} The UI now sends a JSON object of the query graph.
     \item \texttt{B:} Our response has changed from the original Wikidata response. We now send a different JSON Object.
@@ -280,4 +280,4 @@ With these changes in place, our RDFExplorer client can now query to our local e
 
 The remaining \texttt{C2} and \texttt{D2} work just as they had previously worked from Wikidata to the UI, but this time, the requests and responses are handled by our backend and converted from and to the previously mentioned data structures.
 
-As was mentioned in \autoref{chap:execution}, we will send two queries to both index: via \texttt{C1} to our local index and via \texttt{C2} to the remote endpoint. If we receive a response from the remote endpoint (\texttt{D2}) within a configurable timeout threshold, we return these remote endpoint exact results, otherwise if the remote endpoint times out, we return our local approximated results (\texttt{D1}).
+As was mentioned in \Cref{chap:execution}, we will send two queries to both index: via \texttt{C1} to our local index and via \texttt{C2} to the remote endpoint. If we receive a response from the remote endpoint (\texttt{D2}) within a configurable timeout threshold, we return these remote endpoint exact results, otherwise if the remote endpoint times out, we return our local approximated results (\texttt{D1}).
