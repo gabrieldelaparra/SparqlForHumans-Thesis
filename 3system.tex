@@ -30,12 +30,12 @@ Our system is built entirely as a web service backend.
 This backend sits between the user interface and a remote SPARQL query endpoint. 
 The entry point of our system is an API that will take requests from different services, such as SPARQL query editors or SPARQL visual explorers. 
 
-Depending on the query type, the system can do a keyword search directly on the index or it can parse the query for SPARQL triple patterns. 
+Depending on the query type, the system can do a keyword search directly on the index, or it can parse the query for SPARQL triple patterns. 
 In the latter case, the SPARQL query will be converted to a graph. 
 This graph will be processed and then sent for execution. 
 The execution of the query is sent in parallel to both the remote SPARQL endpoint and the local index. 
 The results are then post-processed and sent back to the user for display and selection. 
-We will expand some more on this steps in the following sections.
+We will expand some more on these steps in the following sections.
 
 These last interactions, related to the UI, are not in the scope of our work; nevertheless, we have integrated our system to a visual query system for demonstration. 
 This UI integration, both for the request and the display of results, is explained in detail in \Cref{chap:Frontend}.
@@ -45,7 +45,7 @@ This initialization process can be divided into two sub-processes:
 Pre-processing and Indexing. 
 The details of this initialization are described in \Cref{chap:init}. 
 
-All of the source code for the back-end is written in \textit{C\#} as a .Net Standard Library. 
+All the source code for the back-end is written in \textit{C\#} as a .Net Standard Library. 
 The following dependencies are used:
 
 \begin{itemize}
@@ -59,7 +59,7 @@ The following dependencies are used:
     \item \textit{Newtonsoft.Json}\footnote{\url{https://www.newtonsoft.com/json}} is used for handling JSON.
 \end{itemize}
 
-The integration code for the front-end is written in \textit{Javascript}. The code is available at the following locations:
+The integration code for the front-end is written in \textit{JavaScript}. The code is available at the following locations:
 \begin{itemize}
     \item \url{https://github.com/gabrieldelaparra/SPARQLforHumans}. This project.
     \item \url{https://github.com/gabrieldelaparra/RDFExplorer}. Forked and modified version of RDFExplorer.
@@ -177,7 +177,7 @@ Before ending this chapter, we would like to emphasize something that was mentio
 Our system can provide approximate results for some triple patterns in complex queries. 
 We will try to explain these approximations by example. 
 Consider that in our input dataset, there is no such triple for Mary (Mary eats Pizza), but that triple does exist for Bob (Bob eats Pizza). 
-While constructing a complex query, where the remote endpoint times out, the local index results for a instance of type \textit{Human} and for the \textit{eats} predicate, will return Pizza as one of the alternatives.
+While constructing a complex query, where the remote endpoint times out, the local index results for an instance of type \textit{Human} and for the \textit{eats} predicate, will return Pizza as one of the alternatives.
 This is due to the nature of our index.
 Our index is not based on complete triples, but types, domains and ranges.
 This way of indexing supports the query term suggestion tasks, but approximates results for such cases.

@@ -1,7 +1,7 @@
 \chapter{Autocompletion Techniques}
 \label{chap:Backend}
 
-In this chapter we describe the details of our system. Per \Cref{fig:architecture}, our implementation works as a backend that sits between the user interface and a remote SPARQL query endpoint. It takes SPARQL queries as input and returns suggestions for the variables in those queries. Since we are focusing on dealing with large datasets (480GB for the uncompressed Wikidata dump), direct in-memory storage/query is not possible; rather a specialized on-disk index is required.  Before we describe the details of our backend, we introduce an extended example in order to provide an overview of the system.
+In this chapter we describe the details of our system. Per \Cref{fig:architecture}, our implementation works as a backend that sits between the user interface and a remote SPARQL query endpoint. It takes SPARQL queries as input and returns suggestions for the variables in those queries. Since we are focusing on dealing with large datasets (480 GB for the uncompressed Wikidata dump), direct in-memory storage/query is not possible; rather a specialized on-disk index is required.  Before we describe the details of our backend, we introduce an extended example in order to provide an overview of the system.
 
 \section{Overview}
 
@@ -59,11 +59,11 @@ wd:Q83495 wdt:P57 wd:Q9544977 . # Director Lilly Wachowski
 \end{figure}
 
 Without knowing the resource identifiers, or knowing a few of them, and using the Wikidata Query Service~\cite{wikidataQueryService} a user might create a query that could be something like in \Cref{fig:siblingsSPARQL}. 
-For the example query, we have added some of the basic identifiers, such as \texttt{wdt:P31} (\textit{instanceOf}), \texttt{wd:Q5} (\textit{Human}) and \texttt{wd:Q11424} (\textit{Film}), but these might also be variables\footnote{We differentiate constant from variables: a constant in our example would be Human (Q5) or instance of (P31). All the other elements, starting with '?' are variables. Our system will propose results only for variables.}. 
+For the example query, we have added some basic identifiers, such as \texttt{wdt:P31} (\textit{instanceOf}), \texttt{wd:Q5} (\textit{Human}) and \texttt{wd:Q11424} (\textit{Film}), but these might also be variables\footnote{We differentiate constant from variables: a constant in our example would be Human (Q5) or instance of (P31). All the other elements, starting with '?' are variables. Our system will propose results only for variables.}. 
 In such a case, users could search values to replace variables via keyword lookup (or leave them as variables and use our system to select a value). 
 We have added these values to further explain our backend. We have also added some properties, such as \texttt{?sibling} and \texttt{?director} as variables; we will explain how a user can get suggestions for these variables.
 We remark that in practice these variables will likely have generic labels such as \texttt{?var1}, \texttt{?var2}, etc., where we add variables with more intuitive labels for illustration purposes. 
-We would also like to note that some relations, like director, can be a tricky. One could think that the relation is in the other way: e.g.: \texttt{?human directed ?movie}. We will discuss more about this in our future work section \Cref{chap:futureWork}.
+Furthermore, we would also like to note that some relations, like director, can be tricky. One could think that the relation is in the other way: e.g.: \texttt{?human directed ?movie}. We will discuss more about this in our future work \Cref{chap:futureWork}.
 
 \begin{figure}[H]
 \begin{minted}[]{sparql}
@@ -84,7 +84,7 @@ SELECT * WHERE {
     ?movie ?director ?human2 .
 }
 \end{minted}
-\caption{Without some knowledge the underlying RDF data, a user could create a query where the properties are variables. A query like this will time out in a SPARQL endpoint such as \url{https://query.wikidata.org/}}
+\caption{Without some knowledge of the underlying RDF data, a user could create a query where the properties are variables. A query like this will time out in a SPARQL endpoint such as \url{https://query.wikidata.org/}}
 \label{fig:siblingsSPARQL}
 \end{figure}
 
@@ -159,7 +159,7 @@ instanceOf.Range = [...]
 \label{fig:siblingsPropertyIndex}
 \end{figure}
 
-Once the index is built, queries can be processed. Given a query graph, our system will first check all of the graph's nodes and edges for constants. For each constant element, we will annotate that element: nodes with the types of that constant; and edges with the constant's domain- and range-types (as seen on \Cref{chap:motivation}). 
+Once the index is built, queries can be processed. Given a query graph, our system will first check all the graph's nodes and edges for constants. For each constant element, we will annotate that element: nodes with the types of that constant; and edges with the constant's domain- and range-types (as seen on \Cref{chap:motivation}). 
 
 From our example, we know the following:
 
@@ -177,7 +177,7 @@ InstanceOf (P31)
 ?director
 \end{minted}
 
-Since we know some of the constants, we have information about the types of some nodes and edges. This gives our system some data about variable-nodes and -edges linked to known constants. 
+Since we know some constants, we have information about the types of some nodes and edges. This gives our system some data about variable-nodes and -edges linked to known constants. 
 
 \begin{minted}[escapeinside=||,frame=none,linenos=false]{text}
 |\bf{Types:}|
@@ -194,7 +194,7 @@ At this point, we can provide approximated suggestions for every element that li
 ?director has domain Film and range Human.
 \end{minted}
 
-Additionally our database might contain several domain- and range-types for constant properties:
+Additionally, our database might contain several domain- and range-types for constant properties:
 
 \begin{minted}[escapeinside=||,frame=none,linenos=false]{text}
 mother (P25), spouse (P26), child (P40) have domain Human and range Human.
@@ -213,7 +213,7 @@ Film.Domain = [director, producer, genre, ...]
 Film.Range = [basedOn, derivativeWork, ...]
 \end{minted}
 
-In order to get proper suggestions, we need to intersect the inferred types and provide relevant suggestions for those inferred values. Intersecting types is required to match the information we know about linked constants. If a node, for instance, has incoming and outgoing edges, the possible types of that node will be the ones that are a match for all of those incoming and outgoing edges. Since we may know the domain- and range-types of some of the properties of those edges, we can estimate that the possible types for a node would be those in the intersection of the incoming-edges-range-types and the outgoing-edges-domain-types.
+In order to get proper suggestions, we need to intersect the inferred types and provide relevant suggestions for those inferred values. Intersecting types is required to match the information we know about linked constants. If a node, for instance, has incoming and outgoing edges, the possible types of that node will be the ones that are a match for all of those incoming and outgoing edges. Since we may know the domain- and range-types of some properties of those edges, we can estimate that the possible types for a node would be those in the intersection of the incoming-edges-range-types and the outgoing-edges-domain-types.
 
 \begin{minted}[escapeinside=||,frame=none,linenos=false]{text}
 |\bf{Suggestions:}|
@@ -250,7 +250,7 @@ These results will be processed; mainly some intersections and duplication remov
 The post-processed results are then sent back to the user for display and selection.
 
 This double request mechanism allows us to deliver exact results in the case that the remote SPARQL endpoint does not time out, or otherwise, the over-approximated results from our local index in case it does time out. 
-Thus the system can return possible results that would otherwise keep the user indefinitely waiting or in the worst case, never return. 
+Thus, the system can return possible results that would otherwise keep the user indefinitely waiting or in the worst case, never return. 
 
 The chapter concludes by describing our application interface, which works as the entry point of our system. 
 It will take requests from different services, such as SPARQL query editors or SPARQL visual explorers and send the information either to the graph parsing module, for SPARQL queries; 
@@ -261,12 +261,12 @@ The integration with a user interface will be left for \Cref{chap:Frontend}.
 % ##############################################################################################
 % ##############################################################################################
 
-\section{Initializaton}
+\section{Initialization}
 \label{chap:init}
 
 Before indexing the data, some pre-processing is required. 
-The pre-processing filters what are considered valid triples and adds certain inverse relations between some of the triples that are read. 
-The system will process a RDF dump to make the following changes to it:
+The pre-processing filters what are considered valid triples and adds certain inverse relations between some triples that are read. 
+The system will process an RDF dump to make the following changes to it:
 \begin{itemize}
     \item Filter valid triples.
     \item Add inverse relations.
@@ -282,8 +282,8 @@ The system will process a RDF dump to make the following changes to it:
 
 Another important aspect of the system is that it takes compressed files as inputs, and generates compressed output files. 
 This is important mainly due to space restrictions. 
-The Wikidata dump\footnote{As of February 2020} is $\sim$36GB compressed and $\sim$480GB decompressed.
-A pre-processed output file is $\sim$8GB compressed. 
+The Wikidata dump\footnote{As of February 2020} is $\sim$36 GB compressed and $\sim$480 GB decompressed.
+A pre-processed output file is $\sim$8 GB compressed. 
 
 \subsection{Filter}
 
@@ -337,7 +337,7 @@ wd:Q47 wdt:P1082 "1852168"^^<http://www.w3.org/2001/XMLSchema#decimal> .
 \subsection{Inverse relations and sorting}
 
 Following the filtering process, the system adds the inverse relation for triples patterns containing non-literal objects. 
-For every \texttt{(subject, predicate, object)} triple with only non-literal \texttt{objects}, the system adds the inverse \texttt{(object, inverse/Predicate, subject)} triple. This will allow us to treat the subject and object positions of triples equally for the purposes of generating suggestions, while requiring minimal additional code in later components.
+For every \texttt{(subject, predicate, object)} triple with only non-literal \texttt{objects}, the system adds the inverse \texttt{(object, inverse/predicate, subject)} triple. This will allow us to treat the subject and object positions of triples equally for the purposes of generating suggestions, while requiring minimal additional code in later components.
 
 \begin{example}
 For example, the following triples:
@@ -376,7 +376,7 @@ The final step is to sort the pre-processed file. Sorting is done via merge sort
          --compress-program=gzip | gzip > {output}
 \end{minted}
 
-This command takes an \texttt{\{input\}} compressed file as parameter. It sorts it using the \texttt{tmp/} folder for storing temporary files, where each chunk during the merge-sort process is as large as 200 Mbytes. During the process, it uses 4 threads. Finally the sorted results are compressed to an \texttt{\{output\}} file.
+This command takes an \texttt{\{input\}} compressed file as parameter. It sorts it using the \texttt{tmp/} folder for storing temporary files, where each chunk during the merge-sort process is as large as 200 Mbytes. During the process, it uses 4 threads. Finally, the sorted results are compressed to an \texttt{\{output\}} file.
 
 % ##############################################################################################
 % ##############################################################################################
@@ -418,7 +418,7 @@ A depiction of both of these processes can be seen in \Cref{fig:indexing}.
 Data relating to entities is indexed using \textit{Lucene}. 
 As discussed in \Cref{chap:lucene}, Lucene is a search engine library, mostly suitable for text indexing and searching capabilities. 
 This enables out-of-the-box keyword-search for entities and properties.
-As mentioned previously, Lucene adds an additional relevance metric based on TF-IDF, which complements the PageRank value that we will calculate later.
+As mentioned previously, Lucene adds a relevance metric based on TF-IDF, which complements the PageRank value that we will calculate later.
 
 The index in Lucene is a document database index. 
 Each document of this database has fields. 
@@ -442,7 +442,7 @@ Lucene offers relevance-based ranking (using a variant of TF-IDF) for searches. 
 
 In order to get the results sorted by both relevance and importance, a ranking value, calculated via PageRank, is added to our index. 
 As seen in \Cref{chap:pagerank}, PageRank was originally designed for directed graphs such as websites and their links. 
-PageRanks works by iteratively setting relevance values on nodes based on the incoming and outgoing nodes (edges pointing to other nodes). 
+PageRank works by iteratively setting relevance values on nodes based on the incoming and outgoing nodes (edges pointing to other nodes). 
 In the same way, our PageRank implementation works by iteratively setting the relevance of incoming and outgoing entities through their edges. 
 
 Our implementation of PageRank works in memory, and is not different from other implementations. 
@@ -466,7 +466,7 @@ wd:Q1 wdt:P828 wd:Q323 .
 wd:Q1 <http://www.wikidata.org/prop/reverse/P1542> wd:Q323 .
 \end{minted}
 
-The index document representation for this triples is shown in \Cref{table:triplesToDocument}.
+The index document representation for these triples is shown in \Cref{table:triplesToDocument}.
 
 \begin{table}[h!]
 \centering
@@ -567,7 +567,7 @@ Given a triple pattern statement, type ranges allow our system to provide sugges
     \item Given an \textit{Object}: the system provides suggestions for the \textit{Property}.
 \end{itemize}
 
-\textit{Type Ranges} work in a similar way as \textit{Type Domains}: by creating a \textit{Dictionary} with \textit{PropertyId} as \textit{Key} and all the \textit{TypeIds} that each \textit{Property} has as \textit{Range}.
+\textit{Type Ranges} work similarly as \textit{Type Domains}: by creating a \textit{Dictionary} with \textit{PropertyId} as \textit{Key} and all the \textit{TypeIds} that each \textit{Property} has as \textit{Range}.
 
 \begin{example}
 Given the following data:
@@ -727,7 +727,7 @@ e1, e2, e3 are constants (instanceOf);
 ?human1, ?human2 are instances of type Human;
 \end{minted}
 
-Our proposals for the \texttt{?movie}, \texttt{?human1} and \texttt{?human2} variables are currently limited to the information available in our index for instances of those types: instances of Human and Film. As readers might suspect, there are millions of values that these individual variables can take in Wikidata. The suggestions for entities are unlikely to be of relevance because the query is still to broad.
+Our proposals for the \texttt{?movie}, \texttt{?human1} and \texttt{?human2} variables are currently limited to the information available in our index for instances of those types: instances of Human and Film. As readers might suspect, there are millions of values that these individual variables can take in Wikidata. The suggestions for entities are unlikely to be of relevance because the query is still too broad.
 
 Our system in this case will support users in narrowing the options for the rest of variables: the properties, which in turn support our users in completing the missing information in the graph.
 
@@ -811,7 +811,7 @@ Let us consider the graph of \Cref{fig:example_graph1}.
         \label{fig:example_graph1}
 \end{figure}
 
-The graph on \Cref{fig:example_graph1} can be described by the following triple pattern: \texttt{v1 p1 v2}. We consider that each term may be constant or variable. If all of the elements are variables, we would let the remote endpoint handle this case (as was described in \Cref{chap:graph_exploration}). For this reason, we will assume that something in this graph is a constant: \texttt{v1}, \texttt{p1} or \texttt{v2}.
+The graph on \Cref{fig:example_graph1} can be described by the following triple pattern: \texttt{v1 p1 v2}. We consider that each term may be constant or variable. If all the elements are variables, we would let the remote endpoint handle this case (as was described in \Cref{chap:graph_exploration}). For this reason, we will assume that something in this graph is a constant: \texttt{v1}, \texttt{p1} or \texttt{v2}.
 
 Let us consider that \texttt{p1} and \texttt{v2} are variable, but \texttt{v1} is constant. Moreover, let us consider that \texttt{v1} is known to be an instance of type \texttt{Human}.
 

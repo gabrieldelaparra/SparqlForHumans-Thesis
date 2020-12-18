@@ -15,7 +15,7 @@ This approach for modelling and exchanging information across the Internet is co
 Even though RDF proposes how the data is modelled, there are still open issues on accessing this data, particularly in terms of usability. 
 To address such issues, there has been interesting research related to visualization, exploration, querying and presenting data.
 
-In regards to querying, SPARQL~\cite{SPARQL}\footnote{A recursive acronym that stands for SPARQL Protocol and RDF Query Language.} is the W3C recommended language for querying RDF data structures and is based on graph pattern matching. According to existing literature e.g.:~\cite{Ferre2016, Lehmann2014, Unger2014}, there seems to be two main issues regarding SPARQL usage difficulties by non-technical users: learning SPARQL language syntax and the lack of helpful user interfaces.
+Regarding querying, SPARQL~\cite{SPARQL}\footnote{A recursive acronym that stands for SPARQL Protocol and RDF Query Language.} is the W3C recommended language for querying RDF data structures and is based on graph pattern matching. According to existing literature e.g.:~\cite{Ferre2016, Lehmann2014, Unger2014}, there seems to be two main issues regarding SPARQL usage difficulties by non-technical users: learning SPARQL language syntax and the lack of helpful user interfaces.
 
 There have been several approaches proposed to broaden the use of SPARQL among non-experts: 
 natural language approaches~\cite{Ngomo2013, Lehmann2013, Rico2015, Ngomo2019}, faceted search~\cite{Arenas2016, Moreno2018}, 
@@ -30,7 +30,7 @@ Based on the available research and applications, we have identified that althou
 a trade-off between usability and expressiveness exist where simpler systems e.g.: 
 faceted search, are easy to use but fail to express complex queries. 
 In those complex scenarios SPARQL syntax or a similar query representation is required. 
-However we have identified that SPARQL systems lack some mechanics that are supported by (for example) systems of programming languages, 
+However, we have identified that SPARQL systems lack some mechanics that are supported by (for example) systems of programming languages, 
 in particular autocompletion, and that implementing these mechanics in SPARQL is not straightforward and requires research for a specialised approach.
 
 In this work we provide some techniques for allowing users to easily and efficiently approach the SPARQL query building process. 
@@ -102,7 +102,7 @@ Nevertheless, we have found that in our implementation a trade-off is required b
 
 This trade-off is implemented as part of our index. 
 We build our index using the subject types and the object types  (e.g., \textit{Human}, \textit{Country}), not the instances (e.g., \textit{Jon}, \textit{Ireland}). 
-Because of this, we display all available properties between two entities types, while in reality, the available triples could have some restrictions due to other edges that would have prevented some of the results from being shown.
+Because of this, we display all available properties between two entities types, while in reality, the available triples could have some restrictions due to other edges that would have prevented some results from being shown.
 
 To overcome this trade-off, our query evaluation runs two parallel threads. 
 One runs on the query endpoint\footnote{Wikidata Query Endpoint Service in our case}, requesting the SPARQL engine to return the instance-based results. The other one runs on our local index. 
@@ -112,11 +112,11 @@ This would allow the engine to return the correct results from the query endpoin
 To test our work, we have applied our index to RDFExplorer~\cite{Vargas2019}, a SPARQL Visual Query System for exploration and query building. 
 We have chosen this work due to the simplicity that it offers users for interactively building SPARQL queries without any knowledge of the language syntax. 
 It also provides some helpful tools for navigating entities and displaying the results while building the query. 
-Currently this system allows users to search for entities through keyword search but also by selecting suggesting terms. 
+Currently, this system allows users to search for entities through keyword search but also by selecting suggesting terms. 
 The system gets the suggestions by querying the endpoint directly. 
 While for some cases this will return the proper results, other cases, such as searching incoming properties for an instance of \textit{Human}, could result in a timeout, in which case the system fails to provide any suggestions.
 
-In this work we address some of the open issues that we have identified: 
+In this work we address some open issues that we have identified: 
 Most users have incomplete knowledge of the entities and properties they are trying to query for.
 Moreover, users should be able to write queries with just intuitive knowledge about the queried dataset. 
 We have also identified that available tools either do not provide autocompletion based on available valid terms~\cite{wikidataQueryService}, or aim to return precise suggestions for which timeouts are inevitable~\cite{Vargas2019}. 

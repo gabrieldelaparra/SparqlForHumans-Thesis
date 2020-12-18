@@ -11,7 +11,7 @@ In this chapter we will focus on the proof of concept of our design:
 providing users query-term suggestions while they are building SPARQL queries. 
 That said, while we are using RDFExplorer as our user interface, any user interface that would provide users suggestions for their SPARQL query building process would be a valid candidate.
 
-We will start by describing the RDFExplorer system and some of the issues it exhibits while providing suggestions, mainly because of the way it gets suggestions directly from the Wikidata endpoint results. 
+We will start by describing the RDFExplorer system and some issues it exhibits while providing suggestions, mainly because of the way it gets suggestions directly from the Wikidata endpoint results. 
 We will then proceed to describe an integration with our backend API to get better response times while parallelizing access to both our local specialized index and the remote endpoint.
 
 \section{RDFExplorer}
@@ -78,7 +78,7 @@ Our focus during this integration, is to compare how different endpoints affect 
 
 \section{Integration as proof of concept}
 
-In this section we present our backend integration to the RDFExplorer frontend client. The RDFExplorer original source code is currently hosted on github: \url{https://github.com/hvarg/RDFExplorer}. The source code is written in \textit{javascript}. We forked this repository\footnote{Forked to \url{https://github.com/gabrieldelaparra/RDFExplorer}} and did our integration in this branch. 
+In this section we present our backend integration to the RDFExplorer frontend client. The RDFExplorer original source code is currently hosted on github: \url{https://github.com/hvarg/RDFExplorer}. The source code is written in \textit{JavaScript}. We forked this repository\footnote{Forked to \url{https://github.com/gabrieldelaparra/RDFExplorer}} and did our integration in this branch. 
 
 Some code changes were required for our integration: 
 \begin{itemize}

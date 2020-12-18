@@ -14,9 +14,9 @@ In order to answer these questions, we will first present the experimental setti
 
 \section{Experimental setup}
 
-For this work, we have used a personal computer with a i7-4600M CPU @ 2.9GHz and 16GB of RAM, running on Windows 10.
+For this work, we have used a personal computer with an i7-4600M CPU @ 2.9 GHz and 16 GB of RAM, running on Windows 10.
 
-We based our development on the Wikidata dump of March 4\textsuperscript{th} 2018 (20,821,216,963 bytes); and our evaluation of the system with the dump of May 23\textsuperscript{th} 2020 (41,285,029,233 bytes). We had originally developed results from our first Wikidata dump, but we found out that the information in our dataset was outdated, and as consequence, that results against the Wikidata query service were too different to compare.
+We based our development on the Wikidata dump of March 4\textsuperscript{th} 2018 (20,821,216,963 bytes); and our evaluation of the system with the dump of May 23\textsuperscript{rd} 2020 (41,285,029,233 bytes). We had originally developed results from our first Wikidata dump, but we found out that the information in our dataset was outdated, and as a consequence, that results against the Wikidata query service were too different to compare.
 
 Regarding the source code, it was written in C\# and tested with \textit{xUnit} with 217 tests and 89\% code coverage. As external packages we have used the following:
 \begin{itemize}
@@ -85,11 +85,11 @@ We have mentioned before that our system will provide over-approximated suggesti
 For this, we are going to create a list of sample properties and run queries using these. We expect to get an over-approximation of our suggested values, while not leaving any values outside. In other words, we are expecting that we return all true positives while also having a considerable amount of false positives and low-to-zero false negatives: we expect our over-approximation model to have 100\% recall, with any drop in recall being due to changes in the data between our indexing process, and running the queries on the live SPARQL endpoint.
 
 \subsection{Sample queries}
-For our queries, we have created a list of sample properties. Selecting a sample set of properties can be a daunting task: what makes a property a good candidate for testing? A straightforward approach would be to randomly sample properties with equal probability, but most properties in Wikidata have very few triples, while those few properties with more triples are more likely to appear in user queries. Hence the straightforward sampling approach does not seem appropriate. We would rather prefer to have an evaluation set that includes properties with differing numbers of triples (frequency), domain classes and range classes.
+For our queries, we have created a list of sample properties. Selecting a sample set of properties can be a daunting task: what makes a property a good candidate for testing? A straightforward approach would be to randomly sample properties with equal probability, but most properties in Wikidata have very few triples, while those few properties with more triples are more likely to appear in user queries. Hence, the straightforward sampling approach does not seem appropriate. We would rather prefer to have an evaluation set that includes properties with differing numbers of triples (frequency), domain classes and range classes.
 
-We thus decided to create a sample set based on two approaches: random and cherry picking. Since picking properties randomly could return some not-so-interesting properties (low frequency, domain or range), we followed the following approach: First we sorted the properties randomly; we calculated the total sum of the value (e.g.: Sum of all frequencies) that we were looking for and calculated the cumulative contribution to the total. From that total, we took 10 random values between 0-1: this way, we compute a weighted sample where properties are sampled with a probability proportional to their value. This gives us 30 properties: 10 for frequency, domain and range.
+We thus decided to create a sample set based on two approaches: random and cherry-picking. Since picking properties randomly could return some not-so-interesting properties (low frequency, domain or range), we followed the following approach: First we sorted the properties randomly; we calculated the total sum of the value (e.g.: Sum of all frequencies) that we were looking for and calculated the cumulative contribution to the total. From that total, we took 10 random values between 0-1: this way, we compute a weighted sample where properties are sampled with a probability proportional to their value. This gives us 30 properties: 10 for frequency, domain and range.
 
-For the cherry picking approach, we took an additional 37 properties that had a mix of frequency/domain/range values. We manually selected some properties that had values in between the spectrum of values and added them to the previous list, e.g.: We picked P21 (sex or gender) that has a high frequency, a high domain and a low range. We also picked P301 (category's main topic), that has a high frequency, a low domain and a high range.
+For the cherry-picking approach, we took an additional 37 properties that had a mix of frequency/domain/range values. We manually selected some properties that had values in between the spectrum of values and added them to the previous list, e.g.: We picked P21 (sex or gender) that has a high frequency, a high domain and a low range. Furthermore, P301 (category's main topic) was also picked, which has a high frequency, a low domain and a high range.
 
 We took 67 sample properties in total for our tests. In \Cref{table:sampleProperties1} and \Cref{table:sampleProperties2} we present these. In this table we can observe that there is a mix of high and low values for frequency, domain and range.
 
@@ -191,13 +191,13 @@ A: ?v1  p1 ?v2 .    B: ?v1  p1 ?v2 .   C: ?v1  p1 ?v2 .   D: ?v1  p1 ?v2 .
    ?v1 ?p2 ?v3 .       ?v2 ?p2 ?v3 .      ?v3 ?p2 ?v1 .      ?v3 ?p2 ?v2 .
 \end{verbatim}
 
-These queries would commonly be encountered as intermediary graphs in query builder interfaces. In each of these four cases, we are going to replace \texttt{p1} with our sample property and query for the values of \texttt{?p2}. This will give us a total of 268 test queries. We will run these queries on both our local index and the remote endpoint without an internal timeout (but still observing the external timeout of 50 seconds from the Wikidata API). We will record both the query execution time on both indexes as well as the results returned for them both. In the next section we will go into the details of the query execution times and proceed with a comparison of the results from both indexes.
+These queries would commonly be encountered as intermediary graphs in query builder interfaces. In each of these four cases, we are going to replace \texttt{p1} with our sample property and query for the values of \texttt{?p2}. This will give us a total of 268 test queries. We will run these queries on both our local index and the remote endpoint without an internal timeout (but still observing the external timeout of 50 seconds from the Wikidata API). We will record both the query execution time on both indexes and the results returned for them both. In the next section we will go into the details of the query execution times and proceed with a comparison of the results from both indexes.
 
 \subsection{Query runtime}
 
 In the previous section we described how we created a collection of 268 sample tests: 4 query types for 67 properties. In this section we compare the query runtime for both our local index and the remote endpoint.
 
-In \Cref{fig:runtimeCompare} a comparison is depicted between our local and remote endpoint query times. In this figure we order the queries by runtime individually for local and remote execution. From these 268 queries, 190 queries, around 70\% of the total, will time out at 50 seconds: the Wikidata Remote Endpoint API timeout; and just 78 queries will return results before the timeout. The local index times cannot be visibly identified so we have introduced also \Cref{fig:runtimeLocal}.
+In \Cref{fig:runtimeCompare} a comparison is depicted between our local and remote endpoint query times. In this figure we order the queries by runtime individually for local and remote execution. From these 268 queries, 190 queries, around 70\% of the total, will time out at 50 seconds: the Wikidata Remote Endpoint API timeout; and just 78 queries will return results before the timeout. The local index times cannot be visibly identified, so we have introduced also \Cref{fig:runtimeLocal}.
 
 \begin{figure}[H]
     \centering
@@ -219,7 +219,7 @@ In our local query times, all queries run in under 3 seconds, with around 8\% ru
 
 In our previous section we presented the query runtimes for our 268 queries. In this section we present the results of those queries: How similar are the values that our system suggests compared against the exact values from the remote endpoint? It is worth mentioning that we can only compare  results for the 78 queries that did return values from the remote endpoint. 
 
-For this, we expect to get an over-approximation of our suggested values, meaning that we return all of the exact values and some incorrect values as well. 
+For this, we expect to get an over-approximation of our suggested values, meaning that we return all the exact values and some incorrect values as well. 
 
 \begin{figure}[ht]
     \centering
@@ -238,10 +238,10 @@ It is important to note that the results that we can provide are based on the da
 
 \section{Discussion}
 
-We started this chapter by raising some questions about our system performance. In regards to the required time for indexing the Wikidata dump, from our results we can see that indexing is a time consuming process that can take up to 109 hours to run. Considering that a new dump is generated every week or every two weeks, our system could be scheduled to run after one of the dump generation tasks.
+We started this chapter by raising some questions about our system performance. Regarding the required time for indexing the Wikidata dump, from our results we can see that indexing is a time-consuming process that can take up to 109 hours to run. Considering that a new dump is generated every week or every two weeks, our system could be scheduled to run after one of the dump generation tasks.
 
-We also considered the space requirements involved for our backend. The system requirements regarding disk space allow our system to keep a version running; sorting our index files requires a peak physical disk space of 300GB, which is not too demanding for modern hardware.
+We also considered the space requirements involved for our backend. The system requirements regarding disk space allow our system to keep a version running; sorting our index files requires a peak physical disk space of 300 GB, which is not too demanding for modern hardware.
 
-Comparing our result times and correctness against SPARQL, our system can deliver results within 3 seconds with 25\% precision on average versus exact results. While interactive user suggestions usually can be expected within the milliseconds range, we consider that our 3 second suggestions are acceptable while using the system, especially if compared against the timeouts that most of the tested queries encounter when computed on the remote SPARQL endpoint.
+Comparing our result times and correctness against SPARQL, our system can deliver results within 3 seconds with 25\% precision on average versus exact results. While interactive user suggestions usually can be expected within the milliseconds range, we consider that our 3-second suggestions are acceptable while using the system, especially if compared against the timeouts that most of the tested queries encounter when computed on the remote SPARQL endpoint.
 
 Related to correctness, since our specialized index is built from a dump, which is generated every week, the correctness of the suggestions will gradually reduce: some triples which establish  domain and range relations might be removed or new ones might be added in the online dataset, which in turn generates a difference between our results and the SPARQL endpoint results. This might be avoided by periodically generating a new specialized index, or implementing a delta mechanism to keep the system up to date. This however is out of our current scope.
