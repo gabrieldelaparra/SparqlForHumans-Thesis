@@ -6,7 +6,7 @@ In this chapter we describe the details of our system. Per \Cref{fig:architectur
 \section{Overview}
 
 Let us consider that a user is looking for "siblings that have directed a film together". 
-Since the user might not very familiar with the available properties in a dataset such as Wikidata, it would be hard for them to directly specify the properties they require. Since they might not be familiar with SPARQL syntax it might be even harder for them to specify the required query directly on the SPARQL endpoint. Rather they choose to use a graphical query builder, like RDFExplorer~\cite{Vargas2019}. Let us consider that they have built a graph query such as the one in \Cref{fig:siblingsQueryGraph}:
+Since the user might not be very familiar with the available properties in a dataset such as Wikidata, it would be hard for them to directly specify the properties they require. Since they might not be familiar with SPARQL syntax it might be even harder for them to specify the required query directly on the SPARQL endpoint. Rather they choose to use a graphical query builder, like RDFExplorer~\cite{Vargas2019}. Let us consider that they have built a graph query such as the one in \Cref{fig:siblingsQueryGraph}:
 
 \begin{figure}[H]
     \centering
@@ -231,7 +231,7 @@ a query execution module.
 An additional application interface (API) acts as the entry point for our system.
 
 This chapter starts off by detailing the specialized index.
-The index section includes the pre-processing and indexing of an RDF dataset dump.
+The index section includes the preprocessing and indexing of an RDF dataset dump.
 
 We will then proceed by describing the graph parser module, which converts an input to our own data structure. 
 In our case, a graph data structure is used to store our SPARQL statements. 
@@ -264,8 +264,8 @@ The integration with a user interface will be left for \Cref{chap:Frontend}.
 \section{Initialization}
 \label{chap:init}
 
-Before indexing the data, some pre-processing is required. 
-The pre-processing filters what are considered valid triples and adds certain inverse relations between some triples that are read. 
+Before indexing the data, some preprocessing is required. 
+The preprocessing filters what are considered valid triples and adds certain inverse relations between some triples that are read. 
 The system will process an RDF dump to make the following changes to it:
 \begin{itemize}
     \item Filter valid triples.
@@ -276,18 +276,18 @@ The system will process an RDF dump to make the following changes to it:
 \begin{figure}[H]
     \centering
         \includegraphics[width=0.5\linewidth]{imagenes/Preprocess.png}
-        \caption{Pre-processing workflow}
+        \caption{Preprocessing workflow}
         \label{fig:preprocess}
 \end{figure}
 
 Another important aspect of the system is that it takes compressed files as inputs, and generates compressed output files. 
 This is important mainly due to space restrictions. 
 The Wikidata dump\footnote{As of February 2020} is $\sim$36 GB compressed and $\sim$480 GB decompressed.
-A pre-processed output file is $\sim$8 GB compressed. 
+A preprocessed output file is $\sim$8 GB compressed. 
 
 \subsection{Filter}
 
-The first pre-processing task is to filter the input data. 
+The first preprocessing task is to filter the input data. 
 We will focus on Wikidata labels and descriptions in the English language. 
 We will also remove triples with datatype values or external IDs.
 While this step could be optional depending on the use-case, the RDFExplorer system that we currently support does not consider such values, and filtering them, currently helps to reduce the number of triples that the system will have to index later. 
@@ -358,15 +358,15 @@ Produces a new file with the original triples, plus the new inverse relation tri
 <uri:/objectC> <uri:/inverse/predicate> <uri:/subjectA> .
 \end{minted}
 
-The separation $[...]$ between \textit{subject}, \textit{object} and \textit{subjectType} statements are due to the final pre-processing task: sorting the output dump file. 
+The separation $[...]$ between \textit{subject}, \textit{object} and \textit{subjectType} statements are due to the final preprocessing task: sorting the output dump file. 
 This keeps entity related triples grouped together, which in turn makes indexing more efficient.
 
 \end{example}
 
-The second benefit of this approach, is that with this sorting, finding if an \textit{entity} is a \textit{type} is immediate, since it will contain predicates as \textit{/inverse/type} within its triples. 
-The pre-processing could exclude this step; nevertheless, adding the inverse triples significantly reduces indexing time, while without it, several iterations through disk access would have been required. 
+The second benefit of this approach is that with this sorting, finding if an \textit{entity} is a \textit{type} is immediate, since it will contain predicates as \textit{/inverse/type} within its triples. 
+The preprocessing could exclude this step; nevertheless, adding the inverse triples significantly reduces indexing time, while without it, several iterations through disk access would have been required. 
 
-The final step is to sort the pre-processed file. Sorting is done via merge sort. At the current development stage, the process is called from the command line. It is to be noted that for sorting of the file, $\sim$3$\times$ the size of the input file is required as free disk space. The command used for sorting is as follows: 
+The final step is to sort the preprocessed file. Sorting is done via merge sort. At the current development stage, the process is called from the command line. It is to be noted that for sorting of the file, $\sim$3$\times$ the size of the input file is required as free disk space. The command used for sorting is as follows: 
 
 \begin{minted}[frame=none]{bash}
     gzip -dc {input} | LANG=C sort                      \
@@ -376,7 +376,7 @@ The final step is to sort the pre-processed file. Sorting is done via merge sort
          --compress-program=gzip | gzip > {output}
 \end{minted}
 
-This command takes an \texttt{\{input\}} compressed file as parameter. It sorts it using the \texttt{tmp/} folder for storing temporary files, where each chunk during the merge-sort process is as large as 200 Mbytes. During the process, it uses 4 threads. Finally, the sorted results are compressed to an \texttt{\{output\}} file.
+This command takes an \texttt{\{input\}} compressed file as a parameter. It sorts it using the \texttt{tmp/} folder for storing temporary files, where each chunk during the merge-sort process is as large as 200 Mbytes. During the process, it uses 4 threads. Finally, the sorted results are compressed to an \texttt{\{output\}} file.
 
 % ##############################################################################################
 % ##############################################################################################
@@ -385,7 +385,7 @@ This command takes an \texttt{\{input\}} compressed file as parameter. It sorts 
 \section{Index}
 \label{chap:index}
 
-After a pre-processed dump has been created, the system can start indexing it. 
+After a preprocessed dump has been created, the system can start indexing it. 
 Indexing occurs in two steps: once for entities and once for properties. In the end, two indexes are created, one for each.
 
 Entity indexing involves the following steps:
@@ -431,9 +431,9 @@ Each entity-document contains the following fields:
     \item \textbf{Label:} Text field.  Value that represents a name for the resource (that may be ambiguous).  In the Wikidata dump, the label is the value of the triples with the predicate \url{http://www.w3.org/2000/01/rdf-schema#label}. 
     \item \textbf{AltLabel:} Text field. Other names the resource is known by.  The predicate for these values in the dump is \url{http://www.w3.org/2004/02/skos/core#altLabel}. This field can store multiple values for the same document.
     \item \textbf{Description:} Text field. Small description of the resource, which helps to disambiguate the resource from others with the same or similar labels. Triples with a description have the predicate \url{http://schema.org/description}.
-    \item \textbf{InstanceOf:} String field. Indicates if the entity is a type. For example, \textit{Barack Obama (Q76)} is type \textit{Human (Q5)}. \textit{Human} has a \textit{InstanceOf} field with a \textit{"true"} value while \texttt{Barack Obama} has an InstanceOf field with \textit{"false"}. This is based on having a property \texttt{inverse/instanceOf (P31)} on at least one incoming edge. This is possible due to adding the previously mentioned inverse relation for properties in the pre-processing stage, which when sorted groups both incoming and outgoing edges for a particular entity.
+    \item \textbf{InstanceOf:} String field. Indicates if the entity is a type. For example, \textit{Barack Obama (Q76)} is type \textit{Human (Q5)}. \textit{Human} has a \textit{InstanceOf} field with a \textit{"true"} value while \texttt{Barack Obama} has an InstanceOf field with \textit{"false"}. This is based on having a property \texttt{inverse/instanceOf (P31)} on at least one incoming edge. This is possible due to adding the previously mentioned inverse relation for properties in the preprocessing stage, which when sorted groups both incoming and outgoing edges for a particular entity.
     \item \textbf{Property:} String field. The collection of the outgoing properties that this resource has. This field can store multiple values. All values in this field are stored without their prefix. Property predicates start with  \url{http://www.wikidata.org/prop/direct/}
-    \item \textbf{InverseProperty:} String field. Same as the Property field, but for incoming properties. As was mentioned before, these triples were added in the pre-processing step to the dump file.
+    \item \textbf{InverseProperty:} String field. Same as the Property field, but for incoming properties. As was mentioned before, these triples were added in the preprocessing step to the dump file.
 \end{itemize}
 
 \subsubsection{Ranking}
@@ -495,7 +495,7 @@ InverseProperty & P1542
 The next step in the initialization stage is to create an index for the properties contained in the input dataset.
 
 \subsubsection{Inverted Index}
-As  was done with the \textit{Entities Index}, an \textit{index} for the \textit{properties} in the dump is also created. In this case, each document corresponds to a \textit{property} and each \textit{property} has fields such as \textit{label}, \textit{description} or a collection of \textit{domain} and \textit{ranges}. 
+As  was done with the \textit{Entities Index}, an \textit{index} for the \textit{properties} in the dump is also created. In this case, each document corresponds to a \textit{property} and each \textit{property} has fields such as \textit{label}, \textit{description} or a collection of \textit{domain} and \textit{range}. 
 We now present each \textit{field} in our index, and the properties of those \textit{fields}.
 
 Each property-document contains the following fields:
@@ -678,17 +678,17 @@ ExploreGraph (graph) {
   }
 }
 \end{minted}
-\caption{Pseudo-code used to exploring if edges and nodes are constants or instance of a type.}
+\caption{Pseudo-code used to explore if edges and nodes are constants or instances of a type.}
 \label{fig:codeExploration}
 \end{figure}
 
-As the last step we check if the input query has enough valid information. We first check if the input is conformed by multiple disconnected sub-graphs. If so, we evaluate each disconnected sub-graph to find if any constants are given in that sub-graph. Consider the following example: 
+As the last step we check if the input query has enough valid information. We first check if the input is conformed by multiple disconnected subgraphs. If so, we evaluate each disconnected subgraph to find if any constants are given in that subgraph. Consider the following example: 
 \begin{minted}[frame=none,linenos=false]{SPARQL}
 ?v1 ?p1 ?v2 . 
 ?v2 ?p2 ?p3 .
 \end{minted}
 In the two statements, only variables and no constants are provided.
-Since a plethora of values could be returned for this sub-query, our system avoids this sub-graph and lets the remote SPARQL endpoint decide a selection of values that should be returned in such cases.
+Since a plethora of values could be returned for this subquery, our system avoids this subgraph and lets the remote SPARQL endpoint decide a selection of values that should be returned in such cases.
 
 The graph exploration allows us to annotate certain nodes and edges, and consider them valid for query execution. To summarize the different exploration scenarios:
 \begin{itemize}
@@ -696,7 +696,7 @@ The graph exploration allows us to annotate certain nodes and edges, and conside
     \item Nodes are classified as \texttt{typed}.
     \item Edges are classified as \texttt{instanceOf}.
     \item \texttt{Typed} nodes with no other incoming or outgoing edges are directly queried over our local index.
-    \item Sub-graphs with only variables are directly queried over the SPARQL endpoint.
+    \item Subgraphs with only variables are directly queried over the SPARQL endpoint.
 \end{itemize}
 
 Once all nodes and edges have been annotated, our system will proceed to evaluate the graph query and fetch the suggestions. 
@@ -786,7 +786,7 @@ Finally, filters and operators that may exist in the query are removed. While we
 
 The following modifications are handled:
 \begin{itemize}
-    \item A query will be sent for each disconnected sub-graph.
+    \item A query will be sent for each disconnected subgraph.
     \item Both labels and descriptions for each element are added from the local index.
     \item Filters and operators are removed from the query.
 \end{itemize}
@@ -839,7 +839,7 @@ The previous case shows how we can provide property suggestions for users with n
 
 Additional to what we could suggest for \texttt{p1}, and given that we have a collection of possible results for \texttt{p1}, we could also infer certain information about the types for \texttt{v2}: instances of the range types for the previous properties, e.g.: instances \texttt{Food}, \texttt{Gender} or \texttt{City}, sorted by relevance.
 
-While this can be costly, the amount of properties in for a large dataset such as Wikidata is around 1300\footnote{The total number of properties are around 8000, but those going from entity-to-entity are only 1300. Other properties go to strings or other datatypes.}, which limits the possibilities for each domain to a few hundred at most. We have decided to also calculate the possible inferred types for \texttt{v2} in this process, since this allow us to provide users with approximate information while building their queries. 
+While this can be costly, the amount of properties in for a large dataset such as Wikidata is around 1300\footnote{The total number of properties are around 8000, but those going from entity-to-entity are only 1300. Other properties go to strings or other datatypes.}, which limits the possibilities for each domain to a few hundred at most. We have decided to also calculate the possible inferred types for \texttt{v2} in this process, since this allows us to provide users with approximate information while building their queries. 
 
 As a summary, for a \texttt{v1 p1 v2} triple pattern, where \texttt{v1} is constant, the following occurs:
 \begin{itemize}

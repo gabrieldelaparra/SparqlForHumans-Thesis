@@ -34,9 +34,9 @@ Regarding the source code, it was written in C\# and tested with \textit{xUnit} 
 
 \section{Index}
 
-In this section we present metrics for both pre-processing and indexing.
+In this section we present metrics for both preprocessing and indexing.
 
-The pre-processing phase gave us the following results:
+The preprocessing phase gave us the following results:
 
 \begin{table}[h!]
 \centering
@@ -49,7 +49,7 @@ Size of output file                     & 9,184,248 & KBytes        \\
 Number of output triples                & 1,098,606,588 &             \\
 Runtime duration                        & 34:59:22  & hh:mm:ss        \\
 \end{tabular}
-\caption{Overview of pre-processing in terms of space and time}
+\caption{Overview of preprocessing in terms of space and time}
 \label{table:preprocessingMetrics}
 \end{table}
 
@@ -197,7 +197,7 @@ These queries would commonly be encountered as intermediary graphs in query buil
 
 In the previous section we described how we created a collection of 268 sample tests: 4 query types for 67 properties. In this section we compare the query runtime for both our local index and the remote endpoint.
 
-In \Cref{fig:runtimeCompare} a comparison is depicted between our local and remote endpoint query times. In this figure we order the queries by runtime individually for local and remote execution. From these 268 queries, 190 queries, around 70\% of the total, will time out at 50 seconds: the Wikidata Remote Endpoint API timeout; and just 78 queries will return results before the timeout. The local index times cannot be visibly identified, so we have introduced also \Cref{fig:runtimeLocal}.
+In \Cref{fig:runtimeCompare} a comparison is depicted between our local and remote endpoint query times. In this figure we order the queries by runtime individually for local and remote execution. From these 268 queries, 190 queries, around 70\% of the total, will time out at 50 seconds: the Wikidata Remote Endpoint API timeout; and just 78 queries will return results before the timeout. The local index times cannot be visibly identified, so we have also introduced \Cref{fig:runtimeLocal}.
 
 \begin{figure}[H]
     \centering

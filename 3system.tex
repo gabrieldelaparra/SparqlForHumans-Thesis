@@ -20,7 +20,7 @@ Our system architecture is as depicted in \Cref{fig:architecture}.
         \label{fig:architecture}
 \end{figure}
 
-Our system allow users that are building SPARQL queries to get entity and property suggestions from a triplestore. 
+Our system allows users that are building SPARQL queries to get entity and property suggestions from a triplestore. 
 This works in two ways: 
 A first contribution is to allow users to query entities or properties via keyword search. 
 The second and most important contribution of our work is to provide suggestions for SPARQL terms, based on the query that is being built. 
@@ -42,7 +42,7 @@ This UI integration, both for the request and the display of results, is explain
 
 It is important to mention that before our system can provide results, it has to be initialized with an RDF dataset dump. 
 This initialization process can be divided into two sub-processes: 
-Pre-processing and Indexing. 
+Preprocessing and Indexing. 
 The details of this initialization are described in \Cref{chap:init}. 
 
 All the source code for the back-end is written in \textit{C\#} as a .Net Standard Library. 
@@ -74,7 +74,7 @@ and SPARQL query term suggestions.
 
 \subsection{Keyword search}
 
-The keyword search feature enrich the user experience of RDF datasets by providing lookup access via \textit{labels}, \textit{descriptions} or \textit{alternative labels} for the queried data. 
+The keyword search feature enriches the user experience of RDF datasets by providing lookup access via \textit{labels}, \textit{descriptions} or \textit{alternative labels} for the queried data. 
 Keyword search functionality is one of the most natural ways of looking for information. 
 While this feature is the de-facto way for users to search for something (e.g. DuckDuckGo) it is not included as part of the SPARQL standard. 
 Keyword search allows users with no or limited knowledge of prefixes or ids to get to their desired results. 
@@ -166,7 +166,7 @@ Once all nodes and edges have been classified, the information will be requested
 Local Index and Remote SPARQL Endpoint. 
 The request to the remote endpoint is sent with a configurable timeout, usually of a few seconds. 
 If the remote endpoint returns values within this time, this results will be returned; otherwise, our internal local index results will be returned. The local results will only be returned if the remote endpoint request fails/times-out. 
-This double request mechanism allow us to suggest possible results that would otherwise keep the user indefinitely waiting or in the worst case, never return. 
+This double request mechanism allows us to suggest possible results that would otherwise keep the user indefinitely waiting or in the worst case, never return. 
 More on this in \Cref{chap:execution}.
 
 Once the results are consolidated, they will be returned to the UI which made the request. 
