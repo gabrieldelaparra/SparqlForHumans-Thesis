@@ -40,8 +40,8 @@
 \RequirePackage{pgffor} % foreach
 
 %% Lenguaje
-\addto\captions{\renewcommand\tablename{Tabla}}
-\addto\captionsspanish{\renewcommand\contentsname{Tabla de Contenido}}
+\addto\captionsspanish{\renewcommand\tablename{Tabla}}
+\addto\captionsspanish{\renewcommand\contentsname{Tabla de Contenidos}}
 \addto\captionsspanish{\renewcommand\listtablename{Índice de Tablas}}
 \addto\captionsspanish{\renewcommand\listfigurename{Índice de Ilustraciones}}
 
@@ -61,28 +61,21 @@
 %% Entornos nuevos
 \newenvironment{abstract}{%
 \cleardoublepage
-\begin{flushright}
-\small
-\begin{tabular}{l}
-RESUMEN DE LA MEMORIA PARA OPTAR \\
-AL TÍTULO DE \MakeUppercase\@carrera \\
-POR: \MakeUppercase\@author \\
-FECHA: \MakeUppercase\@date\\
-PROF. GUÍA: \foreach \x in \@guia { \MakeUppercase\x }
-\end{tabular}
-\end{flushright}
-\begin{center}
-\MakeUppercase\@title
-\end{center}
+\chapter*{Resumen}
 }{\vfill\null}
 
 \newenvironment{dedicatoria}{\cleardoublepage\null\vspace{\stretch{1}}\begin{flushright}\itshape}{\end{flushright}\vspace{\stretch{2}}\null}
 \let\thanks\undefined
-\newenvironment{thanks}{\cleardoublepage\chapter*{}}{\vfill\null}
+\newenvironment{thanks}{
+    %\cleardoublepage
+    \chapter*{Agradecimientos}
+}{\vfill\null}
+
 \newenvironment{intro}{
   \chapter*{Abstract}
-  \addcontentsline{toc}{chapter}{\protect\numberline{}Abstract}
+  %\addcontentsline{toc}{chapter}{\protect\numberline{}Abstract}
 }{\vfill\null}
+
 \newenvironment{conclusion}{
   \chapter*{Conclusion}
   \addcontentsline{toc}{chapter}{\protect\numberline{}Conclusion}
